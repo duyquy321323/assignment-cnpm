@@ -1,0 +1,29 @@
+.print-document-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .print-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .search-button {
+    align-self: flex-start;
+    margin-top: 16px;
+  }
+  
+  .print-table-container {
+    margin-top: 20px;
+  }
+  
+  .table-header {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .table-header th {
+    color: white;
+  }
+  
