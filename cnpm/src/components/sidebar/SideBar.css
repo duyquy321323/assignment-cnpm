@@ -12,8 +12,8 @@ body {
 
 /* Sidebar container */
 .sidebar {
-  width: 250px;
-  height: 75%;
+  width: fit-content;
+  height: fit-content;
   background-color: #ffffff;
   position: fixed;
   top: 12.5%;
@@ -25,6 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  z-index: 1000;
 }
 
 /* Navigation list */

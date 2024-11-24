@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -34,5 +34,71 @@
   }
   to {
     transform: rotate(360deg);
+  }
+} */
+
+/* Reset mặc định */
+body, html, .app {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100%;
+}
+
+/* Layout chính */
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Toàn màn hình */
+}
+
+/* NavBar */
+.navbar {
+  height: 60px;
+  background-color: #343a40;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Layout container (bao gồm Sidebar và Main Content) */
+.layout-container {
+  display: flex;
+  flex: 1;
+  flex-direction: row; /* Căn ngang: Sidebar bên trái, Main Content bên phải */
+  height: 100%; /* Đảm bảo chiếm toàn bộ chiều cao */
+  width: 100%; /* Đảm bảo chiều rộng không bị tràn */
+  overflow: hidden; /* Không để nội dung bị tràn ra ngoài */
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background-color: #2d3748;
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1; /* Main Content chiếm toàn bộ không gian còn lại */
+  padding: 0px; /* Khoảng cách nội dung */
+  background-color: #f8f9fa; /* Màu nền chính */
+  margin-left: 4%;
+  overflow-y: auto;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .layout-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
   }
 }

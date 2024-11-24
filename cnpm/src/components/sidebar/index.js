@@ -8,6 +8,10 @@ import { NavLink } from "react-router-dom";
 import image from '../../assets/image/image.png';
 import "./SideBar.css";
 const Sidebar = () => {
+  const handleLogout = () => {
+    // Xóa token khỏi localStorage để đăng xuất
+    localStorage.removeItem("token");
+  };
   return (
     <div className="sidebar">
       {/* Logo */}
@@ -50,8 +54,10 @@ const Sidebar = () => {
       </div>
 
       {/* Logout Button */}
-      <button className="logout-button">
-        <LogoutIcon /> Đăng xuất
+      <button className="logout-button" onClick={handleLogout}>
+        <NavLink to="/login" className="logout-link">
+          <LogoutIcon /> Đăng xuất
+        </NavLink>
       </button>
     </div>
   );
