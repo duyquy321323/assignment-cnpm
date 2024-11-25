@@ -1,6 +1,8 @@
 package com.cnpm.assignment.printer_system.service.impl;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -14,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.cnpm.assignment.printer_system.entity.User;
 import com.cnpm.assignment.printer_system.exception.custom.CNPMNotFoundException;
 import com.cnpm.assignment.printer_system.exception.custom.PasswordNotMatchException;
@@ -40,6 +44,9 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private JwtToken jwtToken;
 
+    @Autowired
+    private Cloudinary cloudinary;
+
     /**
      * Hàm đăng nhập
      * Kiểm tra email có tồn tại không: nếu có thì kiểm tra password có đúng không
@@ -64,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtToken.generateToken(user); // tạo token cho User;
-        return LoginResponse.builder().avatar(user.getAvatar()).fullName(user.getFullName()).id(user.getId())
+        return LoginResponse.builder().avatar(user.getUrlAvatar()).fullName(user.getFullName()).id(user.getId())
                 .token(token).expiryTime(jwtToken.extractExpirationToken(token).getTime()).build();
     }
 
@@ -76,10 +83,14 @@ public class AccountServiceImpl implements AccountService {
      * -> nếu không tồn tại thì throw ra CNPMNotFoundException("Tài khoản không tồn
      * tại!")
      * !bằng email không phải username
+     * 
+     * @throws IOException
      */
     @Override
-    public void updateAvatar(MultipartFile avatar) {
+    public void updateAvatar(MultipartFile avatar) throws IOException {
         // TODO
+        Map uploadResult = cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.asMap("resource_type", "raw")); //tải file kiểu khác không phải hình ảnh
+        System.out.println((String) uploadResult.get("url"));
     }
 
     /**

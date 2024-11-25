@@ -1,5 +1,6 @@
 package com.cnpm.assignment.printer_system.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -11,7 +12,7 @@ import com.cnpm.assignment.printer_system.response.LoginResponse;
 public interface AccountService {
     public LoginResponse login(String email, String password);
 
-    public void updateAvatar(MultipartFile avatar);
+    public void updateAvatar(MultipartFile avatar) throws IOException ;
 
     public InformationResponse getInformation();
 

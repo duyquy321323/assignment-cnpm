@@ -30,6 +30,6 @@ public class InformationResponse {
     private String email;
     @Schema(example = "0373071644")
     private String phoneNumber;
-    @Schema(example = "abcaibsjiab8932y78fb")
-    private byte[] avatar;
+    @Schema(example = "http://res.cloudinary.com/dau0dy9eu/image/upload/v1732504023/kziojfn1jgzn2t1zlcra.png")
+    private String urlAvatar;
 }

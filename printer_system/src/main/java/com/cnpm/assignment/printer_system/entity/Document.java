@@ -31,8 +31,8 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "file_byte", columnDefinition = "LONGBLOB", nullable = false)
-    private byte[] fileByte;
+    @Column(name="url_file", nullable = false)
+    private String urlFile;
 
     @Column(name = "post_date", nullable = false)
     private Date postDate;

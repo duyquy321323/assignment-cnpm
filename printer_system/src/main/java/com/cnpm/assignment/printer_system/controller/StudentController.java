@@ -3,7 +3,6 @@ package com.cnpm.assignment.printer_system.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.cnpm.assignment.printer_system.request.DocumentsRequest;
 import com.cnpm.assignment.printer_system.request.PayPackagePrintRequest;
 import com.cnpm.assignment.printer_system.request.SearchPrinterStudentRequest;
 import com.cnpm.assignment.printer_system.service.StudentService;
@@ -41,22 +40,23 @@ public class StudentController {
 
     @DeleteMapping("/document")
     @Operation(summary = "Xóa các tài liệu đã tải lên", description = "Xóa tài liệu mà sinh viên đã tải lên bằng id document")
-    public ResponseEntity<?> deleteUploadedDocument(@RequestParam Long idDocument){
+    public ResponseEntity<?> deleteUploadedDocument(@RequestParam Long idDocument) {
         studentService.deleteUploadedDocument(idDocument);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/document")
-    @Operation(summary = "Tải tài liệu mới", description = "Tải tài liệu mới lên hệ thống", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data")))
-    public ResponseEntity<?> uploadDocument(@RequestParam List<MultipartFile> documents) {
-        studentService.uploadDocument(documents);
+    @Operation(summary = "Tải tài liệu mới", description = "Tải tài liệu mới lên hệ thống", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = DocumentsRequest.class))))
+    public ResponseEntity<?> uploadDocument(DocumentsRequest documents) {
+        studentService.uploadDocument(documents.getDocuments());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/printer")
     @Operation(summary = "Tìm kiếm máy in", description = "Tìm kiếm các máy in đang hoạt động theo địa chỉ, trạng thái, id")
     public ResponseEntity<?> searchPrinterActive(@RequestBody SearchPrinterStudentRequest request,
-            @RequestParam(defaultValue = "1", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+            @RequestParam(defaultValue = "1", required = false) Integer pageNo,
+            @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(studentService.getPrinterActive(request, pageNo, pageSize));
     }
 
@@ -64,11 +64,7 @@ public class StudentController {
     @Operation(summary = "Lấy trang còn lại", description = "lấy các trang còn lại của học viện hiện tại bao gồm các loại trang như\n"
             + //
             "     * (Trang màu, trang thường, ...thêm nếu có loại trang mới)")
-    @ApiResponse(
-        responseCode = "200",
-        description = "Chi tiết lấy các loại trang + số lượng hiện tại của user",
-        content=@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
-    )
+    @ApiResponse(responseCode = "200", description = "Chi tiết lấy các loại trang + số lượng hiện tại của user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class)))
     public ResponseEntity<?> getPageNow() {
         return ResponseEntity.ok().body(studentService.getPageNow());
     }

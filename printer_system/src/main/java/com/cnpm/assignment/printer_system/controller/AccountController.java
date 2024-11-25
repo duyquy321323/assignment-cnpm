@@ -1,5 +1,7 @@
 package com.cnpm.assignment.printer_system.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,8 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.cnpm.assignment.printer_system.request.AvatarRequest;
 import com.cnpm.assignment.printer_system.response.ContentResponse;
 import com.cnpm.assignment.printer_system.response.InformationResponse;
 import com.cnpm.assignment.printer_system.response.LoginResponse;
@@ -18,6 +20,7 @@ import com.cnpm.assignment.printer_system.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -37,10 +40,10 @@ public class AccountController {
         return ResponseEntity.ok().body(accountService.login(email, password));
     }
 
-    @Operation(summary = "Cập nhật avatar", description = "Dùng để cập nhật avatar trong trang thông tin cá nhân", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data")))
+    @Operation(summary = "Cập nhật avatar", description = "Dùng để cập nhật avatar trong trang thông tin cá nhân", requestBody = @RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = AvatarRequest.class))))
     @PutMapping("/information")
-    public ResponseEntity<?> updateAvatar(@RequestParam MultipartFile avatar) {
-        accountService.updateAvatar(avatar);
+    public ResponseEntity<?> updateAvatar(AvatarRequest avatar) throws IOException {
+        accountService.updateAvatar(avatar.getAvatar());
         return ResponseEntity.ok().build();
     }
 

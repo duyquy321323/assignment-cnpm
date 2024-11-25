@@ -37,9 +37,8 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] avatar;
+    @Column(name="url_avatar")
+    private String urlAvatar;
 
     private Date birthday;
 
