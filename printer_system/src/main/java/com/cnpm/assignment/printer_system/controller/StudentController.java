@@ -1,5 +1,6 @@
 package com.cnpm.assignment.printer_system.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class StudentController {
 
     @GetMapping("/document")
     @Operation(summary = "Lấy các tài liệu đã tải lên", description = "Lấy các tài liệu chưa xóa mà sinh viên đã từng tải lên hệ thống")
-    public ResponseEntity<?> getUploadedDocument(@RequestParam(defaultValue = "1", required = false) Integer pageNo,
+    public ResponseEntity<?> getUploadedDocument(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
             @RequestParam(defaultValue = "6", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(studentService.getUploadedDocument(pageNo, pageSize));
     }
@@ -48,14 +49,18 @@ public class StudentController {
     @PostMapping("/document")
     @Operation(summary = "Tải tài liệu mới", description = "Tải tài liệu mới lên hệ thống", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = DocumentsRequest.class))))
     public ResponseEntity<?> uploadDocument(DocumentsRequest documents) {
-        studentService.uploadDocument(documents.getDocuments());
+        try{
+            studentService.uploadDocument(documents.getDocuments());
+        } catch (IOException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/printer")
     @Operation(summary = "Tìm kiếm máy in", description = "Tìm kiếm các máy in đang hoạt động theo địa chỉ, trạng thái, id")
     public ResponseEntity<?> searchPrinterActive(@RequestBody SearchPrinterStudentRequest request,
-            @RequestParam(defaultValue = "1", required = false) Integer pageNo,
+            @RequestParam(defaultValue = "0", required = false) Integer pageNo,
             @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(studentService.getPrinterActive(request, pageNo, pageSize));
     }
@@ -71,7 +76,7 @@ public class StudentController {
 
     @GetMapping("/history-payment")
     @Operation(summary = "Lấy lịch sử thanh toán", description = "Lấy lịch sử thanh toán không chi tiết")
-    public ResponseEntity<?> getHistoryPayments(@RequestParam(defaultValue = "1", required = false) Integer pageNo,
+    public ResponseEntity<?> getHistoryPayments(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
             @RequestParam(defaultValue = "6", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(studentService.getHistoryPayments(pageNo, pageSize));
     }
@@ -85,14 +90,14 @@ public class StudentController {
 
     @GetMapping("/bills")
     @Operation(summary = "Lấy lịch sử thanh toán", description = "Lấy lịch sử thanh toán chi tiết")
-    public ResponseEntity<?> getDetailBills(@RequestParam(defaultValue = "1", required = false) Integer pageNo,
+    public ResponseEntity<?> getDetailBills(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
             @RequestParam(defaultValue = "3", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(studentService.getDetailBills(pageNo, pageSize));
     }
 
     @PostMapping("/question")
     @Operation(summary = "Tạo câu hỏi", description = "Tạo câu hỏi trong chủ đề có sẵn hoặc chủ để mới")
-    public ResponseEntity<?> questionQAndA(@RequestParam Long idQAndA, @RequestParam String message) {
+    public ResponseEntity<?> questionQAndA(@RequestParam(required = false) Long idQAndA, @RequestParam String message) {
         studentService.createQuestion(idQAndA, message);
         return ResponseEntity.ok().build();
     }

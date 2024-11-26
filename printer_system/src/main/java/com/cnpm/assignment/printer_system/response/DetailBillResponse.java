@@ -1,5 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -17,4 +18,6 @@ public class DetailBillResponse {
     private List<PackagePrintResponse> packagePrints;
     private Long totalPageNumber;
     private Long totalPricePackages;
+    private Long billId;
+    private LocalDateTime datePayment;
 }

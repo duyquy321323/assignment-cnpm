@@ -1,6 +1,6 @@
 package com.cnpm.assignment.printer_system.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -28,7 +28,7 @@ public class PrinterDocument {
     private PrinterDocumentId id;
 
     @Column(name = "print_date", nullable = false)
-    private Date printDate;
+    private LocalDateTime printDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

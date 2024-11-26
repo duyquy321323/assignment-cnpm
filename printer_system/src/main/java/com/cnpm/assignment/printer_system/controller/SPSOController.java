@@ -27,21 +27,21 @@ public class SPSOController {
     @PostMapping("/printer")
     @Operation(summary = "Tìm kiếm máy in", description = "Tìm kiếm máy in bằng địa chỉ, trạng thái, id")
     public ResponseEntity<?> searchPrinter(@RequestBody SearchPrinterSPSORequest request,
-            @RequestParam(defaultValue = "1", required = false) Integer pageNo, @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
+            @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
         return ResponseEntity.ok().body(spsoService.getPrinter(request, pageNo, pageSize));
     }
 
     @GetMapping("/students")
     @Operation(summary = "Tìm kiếm học sinh", description = "Tìm kiếm học sinh bằng tên đầy đủ")
     public ResponseEntity<?> searchStudent(@RequestParam String fullName,
-            @RequestParam(defaultValue = "1", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+            @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(spsoService.searchStudent(fullName, pageNo, pageSize));
     }
 
     @GetMapping("/history-print{studentId}")
     @Operation(summary = "Lấy lịch sử in", description = "Xem lịch sử in ấn của 1 sinh viên bằng cách truyền id của sinh viên đó vào")
     public ResponseEntity<?> getHistoryPrint(@RequestParam("studentId") Long studentId,
-            @RequestParam(defaultValue = "1", required = false) Integer pageNo, @RequestParam(defaultValue = "11", required = false) Integer pageSize) {
+            @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "11", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(spsoService.getHistoryPrint(studentId, pageNo, pageSize));
     }
 
@@ -54,7 +54,7 @@ public class SPSOController {
 
     @GetMapping("/history-q-and-a")
     @Operation(summary = "Lấy các chủ đề hỏi", description = "Lấy ra các chủ để hỏi của tất cả các sinh viên, đã trả lời hoặc chưa trả lời")
-    public ResponseEntity<?> getHistoryQAndA(@RequestParam(defaultValue = "1", required = false) Integer pageNo,
+    public ResponseEntity<?> getHistoryQAndA(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
             @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(spsoService.getHistoryQAndA(pageNo, pageSize));
     }

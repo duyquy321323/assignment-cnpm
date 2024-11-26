@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class SPSOServiceImpl implements SPSOService {
      * !bằng email không phải username
      */
     @Override
-    public List<PrinterSPSOResponse> getPrinter(SearchPrinterSPSORequest request, Integer pageNo, Integer pageSize) {
+    public Page<PrinterSPSOResponse> getPrinter(SearchPrinterSPSORequest request, Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return null;
@@ -64,7 +65,7 @@ public class SPSOServiceImpl implements SPSOService {
      * !bằng email không phải username
      */
     @Override
-    public List<StudentResponse> searchStudent(String fullName, Integer pageNo, Integer pageSize) {
+    public Page<StudentResponse> searchStudent(String fullName, Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return null;
@@ -84,7 +85,7 @@ public class SPSOServiceImpl implements SPSOService {
      * !bằng email không phải username
      */
     @Override
-    public List<PrintHistoryResponse> getHistoryPrint(Long studentId, Integer pageNo, Integer pageSize) {
+    public Page<PrintHistoryResponse> getHistoryPrint(Long studentId, Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return null;
@@ -109,7 +110,7 @@ public class SPSOServiceImpl implements SPSOService {
      * ->pageSize: kích cỡ trang
      */
     @Override
-    public List<QAndAResponse> getHistoryQAndA(Integer pageNo, Integer pageSize) {
+    public Page<QAndAResponse> getHistoryQAndA(Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return null;

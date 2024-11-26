@@ -1,5 +1,8 @@
 package com.cnpm.assignment.printer_system.enumeration;
 
+import lombok.Getter;
+
+@Getter
 public enum TypePage {
     NORMAL("Loại Thường"),
     COLOR("Loại Màu");

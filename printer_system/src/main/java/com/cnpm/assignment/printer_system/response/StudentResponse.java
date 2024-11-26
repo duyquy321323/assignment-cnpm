@@ -1,6 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +17,9 @@ public class StudentResponse {
     private Long id;
     private String fullName;
     private String email;
-    private Date lastAccessedDate;
+    private LocalDateTime lastAccessedDate;
     private String mssv;
-    private Date birthday;
+    private LocalDateTime birthday;
     private String phoneNumber;
     private Boolean active;
 }

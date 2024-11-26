@@ -1,7 +1,7 @@
 package com.cnpm.assignment.printer_system.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -35,7 +35,7 @@ public class Document {
     private String urlFile;
 
     @Column(name = "post_date", nullable = false)
-    private Date postDate;
+    private LocalDateTime postDate;
 
     @Column(nullable = false)
     private String name;

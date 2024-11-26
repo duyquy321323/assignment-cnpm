@@ -23,5 +23,5 @@ public class BillPrintPackage {
     private BillPrintPackageId id;
 
     @Column(name = "package_quantity", nullable = false)
-    private Long billQuantity;
+    private Long packageQuantity;
 }

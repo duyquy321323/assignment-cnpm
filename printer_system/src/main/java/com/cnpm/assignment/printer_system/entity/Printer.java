@@ -1,7 +1,7 @@
 package com.cnpm.assignment.printer_system.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -40,14 +40,14 @@ public class Printer {
     private Long timeout;
 
     @Column(name = "date_of_use")
-    private Date dateOfUse;
+    private LocalDateTime dateOfUse;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status_student", nullable = false)
     private PrinterStatusStudent printerStatusStudent;
 
     @Column(name = "last_maintenance_date")
-    private Date lastMaintenanceDate;
+    private LocalDateTime lastMaintenanceDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status_spso", nullable = false)

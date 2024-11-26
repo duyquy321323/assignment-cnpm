@@ -3,6 +3,9 @@ package com.cnpm.assignment.printer_system.service;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cnpm.assignment.printer_system.response.ContentResponse;
@@ -16,5 +19,5 @@ public interface AccountService {
 
     public InformationResponse getInformation();
 
-    public List<ContentResponse> getDetailQAndA(Long idQAndA);
+    public List<ContentResponse> getDetailQAndA(HttpServletResponse response, Long idQAndA) throws IOException ;
 }

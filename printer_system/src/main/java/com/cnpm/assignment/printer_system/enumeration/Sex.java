@@ -1,14 +1,16 @@
 package com.cnpm.assignment.printer_system.enumeration;
 
+import lombok.Getter;
+
+@Getter
 public enum Sex {
     MALE("Nam"),
     FEMALE("Nữ"),
-    OTHER("Khác")
-;
+    OTHER("Khác");
 
-private final String value;
+    private final String value;
 
-Sex(String value) {
-    this.value = value;
-}
+    Sex(String value) {
+        this.value = value;
+    }
 }

@@ -32,4 +32,7 @@ public class Student extends User {
 
     @OneToMany(mappedBy = "student", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private List<QAndA> qAndAs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "student", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
+    private List<Bill> bills = new ArrayList<>();
 }

@@ -1,6 +1,6 @@
 package com.cnpm.assignment.printer_system.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -31,12 +31,12 @@ public class Content {
     private String question;
 
     @Column(nullable = false, name = "date_question")
-    private Date dateQuestion;
+    private LocalDateTime dateQuestion;
 
     private String answer;
 
     @Column(name = "date_answer")
-    private Date dateAnswer;
+    private LocalDateTime dateAnswer;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

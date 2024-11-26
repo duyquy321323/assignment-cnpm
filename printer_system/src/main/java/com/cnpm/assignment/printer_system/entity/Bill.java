@@ -1,7 +1,7 @@
 package com.cnpm.assignment.printer_system.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -12,6 +12,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.cnpm.assignment.printer_system.enumeration.BillStatus;
@@ -34,7 +36,7 @@ public class Bill {
     private Long id;
 
     @Column(name = "date_payment")
-    private Date datePayment;
+    private LocalDateTime datePayment;
 
     @Column(name = "total_price", nullable = false)
     private Long totalPrice;
@@ -45,4 +47,8 @@ public class Bill {
 
     @OneToMany(mappedBy = "id.bill", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private List<BillPrintPackage> billPrintPackages = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name="id_student", nullable = false)
+    private Student student;
 }

@@ -1,6 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @Builder
 public class PrintHistoryResponse {
     private Long idPrinter;
-    private Date datePrint;
+    private LocalDateTime datePrint;
     private String address;
     private String nameDocument;
     private List<PageResponse> pageResponses;

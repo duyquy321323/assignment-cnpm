@@ -1,8 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
-import java.util.Date;
-
-import com.cnpm.assignment.printer_system.enumeration.ContentStatus;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +16,7 @@ import lombok.Setter;
 public class QAndAResponse {
     private Long idQAndA;
     private String nameOfStudent;
-    private Date dateQuestion;
+    private LocalDateTime dateQuestion;
     private String firstQuestion;
-    private ContentStatus status;
+    private String status;
 }

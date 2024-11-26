@@ -67,7 +67,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.POST, "/account/login**")
                         .permitAll()
                         .antMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs",
-                                "/API license URL")
+                                "/API license URL", "/cloudinary/all-file**")
                         .permitAll()
                         .antMatchers(HttpMethod.POST, "/printer/print**", "/student/document**", "/student/printer**",
                                 "/student/pay", "/student/question**")
@@ -76,6 +76,8 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                         .hasRole("SPSO")
                         .antMatchers(HttpMethod.GET, "/printer/package-print**", "/student/document**", "/student/page",
                                 "/student/history-payment**", "/student/bills**")
+                        .hasRole("STUDENT")
+                        .antMatchers(HttpMethod.DELETE, "/student/document**")
                         .hasRole("STUDENT")
                         .antMatchers(HttpMethod.GET, "/spso/students**", "/spso/history-print**",
                                 "/spso/history-q-and-a**")

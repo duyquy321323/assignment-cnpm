@@ -14,7 +14,7 @@ import lombok.Setter;
 public class PackagePrintResponse {
     private Long idPackagePrint;
     private String namePackage;
-    private Long quantityPage; // tổng tất cả số trang của các loại page trong gói
+    private Long quantityPackage; // Số lượng gói
     private Long singlePricePackage;
     private Long totalPricePackage;
 }

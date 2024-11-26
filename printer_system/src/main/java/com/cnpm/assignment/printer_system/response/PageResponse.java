@@ -1,7 +1,5 @@
 package com.cnpm.assignment.printer_system.response;
 
-import com.cnpm.assignment.printer_system.enumeration.TypePage;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PageResponse {
     private Long idPage;
-    private TypePage type;
+    private String type;
     private Long quantityPage;
 }

@@ -1,8 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
-import java.util.Date;
-
-import com.cnpm.assignment.printer_system.enumeration.BillStatus;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +18,6 @@ public class HistoryPaymentResponse {
     private String type; // loại giao dịch hiện tại chỉ có "Thanh toán tài liệu"
     private Long pageQuantity;
     private Long totalPrice;
-    private Date datePayment;
-    private BillStatus statusPayment;
+    private LocalDateTime datePayment;
+    private String statusPayment;
 }

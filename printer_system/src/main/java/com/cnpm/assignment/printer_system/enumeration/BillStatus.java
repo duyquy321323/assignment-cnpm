@@ -1,5 +1,8 @@
 package com.cnpm.assignment.printer_system.enumeration;
 
+import lombok.Getter;
+
+@Getter
 public enum BillStatus {
     PROCESSING("Đang Xử Lý"),
     SUCCESS("Thành Công"),

@@ -1,6 +1,6 @@
 package com.cnpm.assignment.printer_system.entity;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,18 +11,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Lob;
 
 import com.cnpm.assignment.printer_system.enumeration.Sex;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Builder
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,10 +34,10 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name="url_avatar")
+    @Column(name = "url_avatar")
     private String urlAvatar;
 
-    private Date birthday;
+    private LocalDateTime birthday;
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -52,7 +49,7 @@ public class User {
     private String fullName;
 
     @Column(name = "last_accessed_date")
-    private Date lastAccessedDate;
+    private LocalDateTime lastAccessedDate;
 
     @Column(nullable = false)
     private String password;

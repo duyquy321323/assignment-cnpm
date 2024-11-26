@@ -1,6 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -18,8 +18,8 @@ import lombok.Setter;
 public class ContentResponse {
     private String nameStudent;
     private String nameSPSO;
-    private Date dateQuestion;
-    private Date dateAnswer;
+    private LocalDateTime dateQuestion;
+    private LocalDateTime dateAnswer;
     private String question;
     private String answer;
 }

@@ -1,12 +1,16 @@
 package com.cnpm.assignment.printer_system.service.impl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,9 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.cnpm.assignment.printer_system.entity.QAndA;
+import com.cnpm.assignment.printer_system.entity.SPSO;
+import com.cnpm.assignment.printer_system.entity.Student;
 import com.cnpm.assignment.printer_system.entity.User;
 import com.cnpm.assignment.printer_system.exception.custom.CNPMNotFoundException;
 import com.cnpm.assignment.printer_system.exception.custom.PasswordNotMatchException;
+import com.cnpm.assignment.printer_system.repository.QAndARepository;
 import com.cnpm.assignment.printer_system.repository.UserRepository;
 import com.cnpm.assignment.printer_system.response.ContentResponse;
 import com.cnpm.assignment.printer_system.response.InformationResponse;
@@ -42,6 +50,9 @@ public class AccountServiceImpl implements AccountService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private QAndARepository qAndARepository;
+
+    @Autowired
     private JwtToken jwtToken;
 
     @Autowired
@@ -60,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public LoginResponse login(String email, String password) {
         // TODO
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndActive(email, true)
                 .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại!"));
         if (!user.getPassword().equals(password)) {
             throw new PasswordNotMatchException("Mật khẩu không chính xác!");
@@ -71,6 +82,11 @@ public class AccountServiceImpl implements AccountService {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtToken.generateToken(user); // tạo token cho User;
+
+        // Set ngày đăng nhập mới nhất cho User
+        user.setLastAccessedDate(LocalDateTime.now());
+        userRepository.save(user);
+
         return LoginResponse.builder().avatar(user.getUrlAvatar()).fullName(user.getFullName()).id(user.getId())
                 .token(token).expiryTime(jwtToken.extractExpirationToken(token).getTime()).build();
     }
@@ -86,11 +102,36 @@ public class AccountServiceImpl implements AccountService {
      * 
      * @throws IOException
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public void updateAvatar(MultipartFile avatar) throws IOException {
         // TODO
-        Map uploadResult = cloudinary.uploader().upload(avatar.getBytes(), ObjectUtils.asMap("resource_type", "raw")); //tải file kiểu khác không phải hình ảnh
-        System.out.println((String) uploadResult.get("url"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails;
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            userDetails = (UserDetails) authentication.getPrincipal();
+            if (userDetails != null) {
+                User user = userRepository.findByEmailAndActive(userDetails.getUsername(), true)
+                        .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại!"));
+
+                // Xóa avatar bằng id user trên cloud
+                if (user.getUrlAvatar() != null && !user.getUrlAvatar().equals("")) {
+                    cloudinary.uploader().destroy(user.getId().toString(), ObjectUtils.emptyMap());
+                }
+
+                // Tải avatar mới lên cloud
+                Map infoAvatar = cloudinary.uploader().upload(avatar.getBytes(),
+                        ObjectUtils.asMap("public_id", user.getId().toString()));
+                String urlAvatar = (String) infoAvatar.get("url");
+
+                // Lưu link avatar mới vào database cho User
+                user.setUrlAvatar(urlAvatar);
+                userRepository.save(user);
+                return;
+            }
+        }
+        throw new CNPMNotFoundException("Tài chưa xác thực. Vui lòng đăng nhập lại...!");
     }
 
     /**
@@ -109,7 +150,28 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public InformationResponse getInformation() {
         // TODO
-        return null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails;
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            userDetails = (UserDetails) authentication.getPrincipal();
+            if (userDetails != null) {
+                User user = userRepository.findByEmailAndActive(userDetails.getUsername(), true)
+                        .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại!"));
+                InformationResponse response = InformationResponse.builder().birthday(user.getBirthday())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName()).phoneNumber(user.getPhoneNumber()).sex(user.getSex().getValue())
+                        .urlAvatar(user.getUrlAvatar()).build();
+                if (user instanceof Student) {
+                    Student student = (Student) user;
+                    response.setMssv(student.getMssv());
+                } else {
+                    response.setMssv("");
+                }
+                return response;
+            }
+        }
+        throw new CNPMNotFoundException("Tài chưa xác thực. Vui lòng đăng nhập lại...!");
     }
 
     /**
@@ -117,10 +179,42 @@ public class AccountServiceImpl implements AccountService {
      * đó
      * 
      * Trả về danh sách ContentResponse
+     * 
+     * @throws IOException
      */
     @Override
-    public List<ContentResponse> getDetailQAndA(Long idQAndA) {
+    public List<ContentResponse> getDetailQAndA(HttpServletResponse response, Long idQAndA) throws IOException {
         // TODO
-        return null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails;
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            userDetails = (UserDetails) authentication.getPrincipal();
+            if (userDetails != null) {
+                User user = userRepository.findByEmailAndActive(userDetails.getUsername(), true)
+                        .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại!"));
+                QAndA qAndA;
+                if (user instanceof Student) {
+                    Student student = (Student) user;
+                    qAndA = qAndARepository.findByIdAndStudent(idQAndA, student)
+                            .orElseThrow(() -> new CNPMNotFoundException("Chủ đề này của bạn không tồn tại...!"));
+                } else if (user instanceof SPSO) {
+                    qAndA = qAndARepository.findById(idQAndA)
+                            .orElseThrow(() -> new CNPMNotFoundException("Chủ đề này không tồn tại...!"));
+                } else {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return null;
+                }
+                List<ContentResponse> responses = qAndA.getContents().stream()
+                        .map(item -> ContentResponse.builder().answer(item.getAnswer()).dateAnswer(item.getDateAnswer())
+                                .dateQuestion(item.getDateQuestion())
+                                .nameSPSO(item.getId().getQAndA().getSpso() != null? item.getId().getQAndA().getSpso().getFullName() : "")
+                                .nameStudent(item.getId().getQAndA().getStudent() != null? item.getId().getQAndA().getStudent().getFullName() : "")
+                                .question(item.getQuestion()).build())
+                        .collect(Collectors.toList());
+                return responses;
+            }
+        }
+        throw new CNPMNotFoundException("Tài khoản chưa xác thực. Vui lòng đăng nhập lại...!");
     }
 }

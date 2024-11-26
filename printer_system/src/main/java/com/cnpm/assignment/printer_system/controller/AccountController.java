@@ -2,7 +2,10 @@ package com.cnpm.assignment.printer_system.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,8 +45,12 @@ public class AccountController {
 
     @Operation(summary = "Cập nhật avatar", description = "Dùng để cập nhật avatar trong trang thông tin cá nhân", requestBody = @RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = AvatarRequest.class))))
     @PutMapping("/information")
-    public ResponseEntity<?> updateAvatar(AvatarRequest avatar) throws IOException {
+    public ResponseEntity<?> updateAvatar(AvatarRequest avatar){
+        try{
         accountService.updateAvatar(avatar.getAvatar());
+        }catch(IOException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -57,7 +64,11 @@ public class AccountController {
     @ApiResponse(responseCode = "200", description = "Chi tiết lấy các cặp câu hỏi và trả lời trong 1 chủ đề", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContentResponse.class)))
     @Operation(summary = "Lấy nội dung", description = "Lấy nội dung các câu hỏi và câu trả lời trong 1 chủ để hỏi đáp của học sinh và spso")
     @GetMapping("/detail-q-and-a{idQAndA}")
-    public ResponseEntity<?> getDetailQAndA(@RequestParam(name = "idQAndA") Long idQAndA) {
-        return ResponseEntity.ok().body(accountService.getDetailQAndA(idQAndA));
+    public ResponseEntity<?> getDetailQAndA(HttpServletResponse response, @RequestParam(name = "idQAndA") Long idQAndA) {
+        try{
+            return ResponseEntity.ok().body(accountService.getDetailQAndA(response, idQAndA));
+        }catch(IOException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }

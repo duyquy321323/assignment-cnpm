@@ -80,6 +80,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/account/login", "POST"),
                 Pair.of("/swagger-ui", "GET"),
                 Pair.of("/v3/api-docs", "GET"),
+                Pair.of("/cloudinary/all-file", "GET"),
                 Pair.of("/API license URL", "GET"));
         String path = request.getServletPath();
         System.out.println(path);

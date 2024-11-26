@@ -1,8 +1,6 @@
 package com.cnpm.assignment.printer_system.response;
 
-import java.util.Date;
-
-import com.cnpm.assignment.printer_system.enumeration.Sex;
+import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -23,9 +21,9 @@ public class InformationResponse {
     @Schema(example = "Nguyễn Văn A")
     private String fullName;
     @Schema(example = "2024-11-24T15:30:00.000+00:00")
-    private Date birthday;
-    @Schema(example = "MALE")
-    private Sex sex;
+    private LocalDateTime birthday;
+    @Schema(example = "Nam")
+    private String sex;
     @Schema(example = "abc.xyz@gmail.com")
     private String email;
     @Schema(example = "0373071644")
