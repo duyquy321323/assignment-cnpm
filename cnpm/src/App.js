@@ -7,6 +7,9 @@ import Documents from "./components/documentsfile-forstudent/index";
 import Login from "./components/login/login";
 import NavBar from "./components/navbar/index";
 import SideBar from "./components/sidebar/index";
+import PaymentHistory from './components/payment/PaymentHistory';
+import PurchasePages from './components/payment/PurchasePages';
+import Support from './components/support/Support';
 
 // Hàm kiểm tra trạng thái đăng nhập
 const isAuthenticated = () => {
@@ -53,6 +56,9 @@ function App() {
                   <Route path="/edit/:id" element={<EditDocument />} />
                   {/* Đường dẫn mặc định khi đăng nhập thành công */}
                   <Route path="*" element={<Navigate to="/files" replace />} />
+                  <Route path="/payment" element={<PaymentHistory />} />
+                  <Route path="/payment/purchase" element={<PurchasePages />} />
+                  <Route path="/support" element={<Support />} />
                 </Routes>
               </MainLayout>
             </ProtectedRoute>
