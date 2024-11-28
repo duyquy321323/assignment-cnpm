@@ -17,7 +17,8 @@ INSERT IGNORE INTO print_package(id, name, page_quantity, id_page) VALUES
 (6, "Gói in màu số 3", 100, 2);
 
 INSERT IGNORE INTO user(id, active, birthday, email, full_name, password, phone_number, sex) VALUES
-(1, b'1', "2004-11-09", "quy.daoquy321323@hcmut.edu.vn", "Đào Duy Quý", "321323", "0373071643", "MALE");
+(1, b'1', "2004-11-09", "quy.daoquy321323@hcmut.edu.vn", "Đào Duy Quý", "321323", "0373071643", "MALE"),
+(2, b'1', "2004-11-09", "phuoc.phanhuu1111@hcmut.edu.vn", "Phan Hữu Phước", "1111", "0585045075", "MALE");
 
 INSERT IGNORE INTO student(id, mssv) VALUES
 (1, "2212864");

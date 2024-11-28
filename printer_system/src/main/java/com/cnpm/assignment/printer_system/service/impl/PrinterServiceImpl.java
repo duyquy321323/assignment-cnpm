@@ -25,10 +25,22 @@ public class PrinterServiceImpl implements PrinterService {
     @Override
     public void printDocuments(Long idPrinter, List<Long> idDocuments) {
         // TODO
+        Printer printer = printerRepository.findById(idPrinter).get();
+
+        Document document = documentRepository.findById(idDocuments.get(0)).get();
+
+        for (Long idDocument : idDocuments) {
+            PrinterDocument printerDocument = new PrinterDocument();
+            printerDocument.setPrinter(printer);
+            printerDocument.setDocument(document);
+            printerDocument.setPrintDate(LocalDateTime.now());
+            printerDocument.setStatus(DocumentStatus.PENDING);
+            printerDocumentRepository.save(printerDocument);
+        }
     }
 
     /**
-     * Hàm để lấy hết tất cả các gói in ra để hiện lên màng hình cho học sinh chọn
+     * Hàm để lấy hết tất cả các gói in ra để hiện lên màn hình cho học sinh chọn
      * mua
      * 
      * Lấy các đối tượng PrintPackage từ database và chuyển thành danh sách
@@ -38,7 +50,19 @@ public class PrinterServiceImpl implements PrinterService {
     public Page<PackagePrintResponse> getPackagePrint(Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        return null;
+        
+        Page<PrintPackage> printPackages = printPackageRepository.findAll(pageable);
+        
+        printPackages.map(printPackage -> {
+            PackagePrintResponse packagePrintResponse = new PackagePrintResponse();
+            packagePrintResponse.setId(printPackage.getId());
+            packagePrintResponse.setName(printPackage.getName());
+            packagePrintResponse.setPrice(printPackage.getPrice());
+            packagePrintResponse.setQuantity(printPackage.getQuantity());
+            packagePrintResponse.setTotalPage(printPackage.getTotalPage());
+            packagePrintResponse.setTotalPrint(printPackage.getTotalPrint());
+            return packagePrintResponse;
+        });
     }
 
 }
