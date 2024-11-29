@@ -1,6 +1,4 @@
 import React from "react";
-import NavBar from "../../navbar";
-import Sidebar from "../../sidebar";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -24,6 +22,8 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Avatar from "@mui/material/Avatar";
 import InfoIcon from "@mui/icons-material/Info";
 import UserProfile from "../UserProfile";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
 
 const UserManagement = () => {
   const listUsers = [
@@ -130,18 +130,24 @@ const UserManagement = () => {
 
   return (
     <>
-      <NavBar />
-      <Sidebar />
       <Box
         sx={{
           marginLeft: "375px",
-          marginTop: "150px",
+          marginTop: "100px",
           marginRight: "40px",
           ".css-1gtchvp-MuiPaper-root": {
             borderRadius: "10px",
           },
         }}
       >
+        <Breadcrumbs separator="›" className="breadcrumb">
+          <Link underline="hover" key="1" color="inherit" href="/">
+            Trang chủ
+          </Link>
+          <Typography key="3" sx={{ color: "gray" }}>
+            Quản lý sinh viên
+          </Typography>
+        </Breadcrumbs>
         {open ? (
           <UserProfile user={selectedUser} handleClose={handleClose} />
         ) : (
@@ -222,7 +228,7 @@ const UserManagement = () => {
                             />
                             {item.name}
                           </Box>
-                        </TableCell>  
+                        </TableCell>
                         <TableCell>{item.email}</TableCell>
                         <TableCell>01/12/2024 12:00 AM</TableCell>
                         <TableCell

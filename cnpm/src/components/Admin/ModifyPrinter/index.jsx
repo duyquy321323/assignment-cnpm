@@ -11,6 +11,10 @@ import DoneIcon from "@mui/icons-material/Done";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
+import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const status = [
   {
@@ -29,6 +33,7 @@ const status = [
 
 const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
   const [selectedStatus, setSelectedStatus] = React.useState(printer.status);
+  const [date, setDate] = React.useState(dayjs());
   const handleChangeStatus = (e) => {
     setSelectedStatus(e.target.value);
   };
@@ -38,7 +43,7 @@ const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
       ...printer,
       status: selectedStatus,
       pagesLeft: `${document.getElementById("outlined-pagesLeft").value} trang`,
-      lastMaintenance: document.getElementById("outlined-lastMaintenance").value,
+      lastMaintenance: date.format("DD/MM/YYYY"),
     });
   };
 
@@ -133,7 +138,9 @@ const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
           </Box>
           <Box>
             <Typography gutterBottom>Ngày bảo trì cuối cùng</Typography>
-            <TextField required id="outlined-lastMaintenance" defaultValue={printer.lastMaintenance} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker value={date} onChange={(newValue) => setDate(newValue)} />
+            </LocalizationProvider>
           </Box>
         </Box>
       </DialogContent>

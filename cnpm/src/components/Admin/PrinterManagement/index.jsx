@@ -1,6 +1,4 @@
 import React from "react";
-import NavBar from "../../navbar";
-import Sidebar from "../../sidebar";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -20,6 +18,8 @@ import StateMenu from "../StateMenu";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import Pagination from "@mui/material/Pagination";
 import ModifyPrinter from "../ModifyPrinter";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
 
 const PrinterManagement = () => {
   const [listPrinters, setListPrinters] = React.useState([
@@ -112,18 +112,24 @@ const PrinterManagement = () => {
 
   return (
     <>
-      <NavBar />
-      <Sidebar />
       <Box
         sx={{
           marginLeft: "375px",
-          marginTop: "150px",
+          marginTop: "100px",
           marginRight: "40px",
           ".css-1gtchvp-MuiPaper-root": {
             borderRadius: "10px",
           },
         }}
       >
+        <Breadcrumbs separator="›" className="breadcrumb">
+          <Link underline="hover" key="1" color="inherit" href="/">
+            Trang chủ
+          </Link>
+          <Typography key="3" sx={{ color: "gray" }}>
+            Quản lý máy in
+          </Typography>
+        </Breadcrumbs>
         <Paper elevation={2} width="100%">
           <Box display="flex" justifyContent="space-between" alignItems="center" p={2} sx={{ paddingTop: "3rem" }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
