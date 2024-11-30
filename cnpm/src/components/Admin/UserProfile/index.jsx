@@ -14,6 +14,8 @@ import Pagination from "@mui/material/Pagination";
 import Avatar from "@mui/material/Avatar";
 import Grid from "@mui/material/Grid2";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import Chip from "@mui/material/Chip";
+import Switch from "@mui/material/Switch";
 
 const BoxStyled = {
   px: 2,
@@ -105,6 +107,8 @@ const UserProfile = ({ user, handleClose }) => {
     },
   ];
 
+  const [active, setActive] = React.useState(true);
+
   return (
     <Paper elevation={2} width="100%">
       <Box
@@ -135,13 +139,14 @@ const UserProfile = ({ user, handleClose }) => {
       <Box sx={{ display: "flex", py: 4 }}>
         <Box sx={{ flex: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <Avatar
-            alt="Remy Sharp"
+            alt=""
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HCMUT_official_logo.png/1200px-HCMUT_official_logo.png"
             sx={{ width: 125, height: 125, border: 1, borderColor: "lightgrey" }}
           />
-          <Typography variant="h6" component="div" color="green">
-            Active
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" , mt: 2 }}>
+            <Chip size="small" label={active ? "Active" : "Inactive"} color={active ? "success" : "error"} />
+            <Switch checked={active} onChange={(e) => setActive(e.target.checked)} />
+          </Box>
         </Box>
         <Divider
           orientation="vertical"

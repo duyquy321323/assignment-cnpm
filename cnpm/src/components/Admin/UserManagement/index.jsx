@@ -182,9 +182,9 @@ const UserManagement = () => {
               }}
               variant="outlined"
             >
-              <InputLabel htmlFor="outlined-adornment-password">Tìm kiếm</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-search">Tìm kiếm</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-password"
+                id="outlined-adornment-search"
                 type="text"
                 endAdornment={
                   <InputAdornment position="end">
