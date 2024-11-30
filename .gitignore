@@ -1,1 +1,35 @@
+
 cnpm/node_modules/
+printer_system/HELP.md
+printer_system/target/
+!printer_system/.mvn/wrapper/maven-wrapper.jar
+!printer_system/**/src/main/**/target/
+!printer_system/**/src/test/**/target/
+
+### STS ###
+printer_system/.apt_generated
+printer_system/.classpath
+printer_system/.factorypath
+printer_system/.project
+printer_system/.settings
+printer_system/.springBeans
+printer_system/.sts4-cache
+
+### IntelliJ IDEA ###
+printer_system/.idea
+printer_system/*.iws
+printer_system/*.iml
+printer_system/*.ipr
+
+### NetBeans ###
+printer_system/nbproject/private/
+printer_system/nbbuild/
+printer_system/dist/
+printer_system/nbdist/
+printer_system/.nb-gradle/
+printer_system/build/
+!printer_system/**/src/main/**/build/
+!printer_system/**/src/test/**/build/
+
+### VS Code ###
+printer_system/.vscode/
