@@ -58,7 +58,7 @@ const Login = () => {
       localStorage.setItem("token", "fake-jwt-token");
 
       // Chuyển hướng đến trang chính sau khi đăng nhập thành công
-      navigate("/files");
+      navigate("cnpm/src/components/homepage");
     } else {
       alert("Sai email hoặc mật khẩu. Vui lòng thử lại!");
     }

@@ -89,7 +89,7 @@ body, html, .app {
   flex: 1; /* Main Content chiếm toàn bộ không gian còn lại */
   padding: 0px; /* Khoảng cách nội dung */
   background-color: #f8f9fa; /* Màu nền chính */
-  margin-left: 4%;
+  /* margin-left: 4%; MARGIN NAY LAM LO KHOANG TRANG CUA HINH NEN O HOMEPAGE*/ 
   overflow-y: auto;
 }
 /* Responsive Design */

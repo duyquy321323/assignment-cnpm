@@ -20,7 +20,7 @@ const Sidebar = () => {
       {/* Navigation */}
       <ul>
         <li>
-          <NavLink to="/home">
+          <NavLink to="/homepage">
             <HomeIcon /> Trang chủ
           </NavLink>
         </li>
