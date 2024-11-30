@@ -49,9 +49,9 @@ public class StudentController {
     @PostMapping("/document")
     @Operation(summary = "Tải tài liệu mới", description = "Tải tài liệu mới lên hệ thống", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = DocumentsRequest.class))))
     public ResponseEntity<?> uploadDocument(DocumentsRequest documents) {
-        try{
+        try {
             studentService.uploadDocument(documents.getDocuments());
-        } catch (IOException e){
+        } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok().build();
@@ -66,9 +66,10 @@ public class StudentController {
     }
 
     @GetMapping("/page")
-    @Operation(summary = "Lấy trang còn lại", description = "lấy các trang còn lại của học viện hiện tại bao gồm các loại trang như\n"
-            + //
-            "     * (Trang màu, trang thường, ...thêm nếu có loại trang mới)")
+    @Operation(summary = "Lấy trang còn lại", description = """
+            l\u1ea5y c\u00e1c trang c\u00f2n l\u1ea1i c\u1ee7a h\u1ecdc vi\u1ec7n hi\u1ec7n t\u1ea1i bao g\u1ed3m c\u00e1c lo\u1ea1i trang nh\u01b0
+                 * (Trang m\u00e0u, trang th\u01b0\u1eddng, ...th\u00eam n\u1ebfu c\u00f3 lo\u1ea1i trang m\u1edbi)""" //
+    )
     @ApiResponse(responseCode = "200", description = "Chi tiết lấy các loại trang + số lượng hiện tại của user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class)))
     public ResponseEntity<?> getPageNow() {
         return ResponseEntity.ok().body(studentService.getPageNow());

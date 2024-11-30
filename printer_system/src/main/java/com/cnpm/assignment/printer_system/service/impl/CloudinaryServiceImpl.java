@@ -18,6 +18,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
+    @SuppressWarnings({"rawtypes", "CallToPrintStackTrace"})
     @Override
     public Map getAllFileCloud(String type) {
         try {

@@ -33,7 +33,7 @@ public class SPSOController {
 
     @GetMapping("/students")
     @Operation(summary = "Tìm kiếm học sinh", description = "Tìm kiếm học sinh bằng tên đầy đủ")
-    public ResponseEntity<?> searchStudent(@RequestParam String fullName,
+    public ResponseEntity<?> searchStudent(@RequestParam(required=false) String fullName,
             @RequestParam(defaultValue = "0", required = false) Integer pageNo, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseEntity.ok().body(spsoService.searchStudent(fullName, pageNo, pageSize));
     }
