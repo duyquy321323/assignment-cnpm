@@ -1,20 +1,48 @@
 package com.cnpm.assignment.printer_system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.cnpm.assignment.printer_system.response.PackagePrintResponse;
+import com.cnpm.assignment.printer_system.entity.Document;
+import com.cnpm.assignment.printer_system.entity.PrintPackage;
+import com.cnpm.assignment.printer_system.entity.Printer;
+import com.cnpm.assignment.printer_system.entity.PrinterDocument;
+import com.cnpm.assignment.printer_system.entity.id.PrinterDocumentId;
+import com.cnpm.assignment.printer_system.enumeration.DocumentStatus;
+import com.cnpm.assignment.printer_system.exception.custom.CNPMNotFoundException;
+import com.cnpm.assignment.printer_system.repository.DocumentRepository;
+import com.cnpm.assignment.printer_system.repository.PrintPackageRepository;
+import com.cnpm.assignment.printer_system.repository.PrinterDocumentRepository;
+import com.cnpm.assignment.printer_system.repository.PrinterRepository;
+import com.cnpm.assignment.printer_system.response.BuyPackageResponse;
 import com.cnpm.assignment.printer_system.service.PrinterService;
 
 @Service
 @Transactional
 public class PrinterServiceImpl implements PrinterService {
+
+    @Autowired
+    private PrinterDocumentRepository printerDocumentRepository;
+
+    @Autowired
+    private PrinterRepository printerRepository;
+
+    @Autowired
+    private DocumentRepository documentRepository;
+
+    @Autowired
+    private PrintPackageRepository printPackageRepository;
 
     /**
      * Hàm để thêm các tài liệu yêu cầu in vào database (PrinterDocument)
@@ -25,20 +53,36 @@ public class PrinterServiceImpl implements PrinterService {
     @Override
     public void printDocuments(Long idPrinter, List<Long> idDocuments) {
         // TODO
+        Printer printer = printerRepository.findById(idPrinter)
+                .orElseThrow(() -> new CNPMNotFoundException("Máy in không tồn tại...!"));
+        List<Document> documents = documentRepository.findAllById(idDocuments);
+        List<PrinterDocument> printerDocuments = new ArrayList<>();
+        for (Document document : documents) {
+            printerDocuments.add(PrinterDocument.builder()
+                    .id(PrinterDocumentId.builder().document(document).printer(printer).build())
+                    .printDate(LocalDateTime.now()).status(DocumentStatus.PROCESSING).build());
+        }
+        printerDocumentRepository.saveAll(printerDocuments);
     }
 
     /**
-     * Hàm để lấy hết tất cả các gói in ra để hiện lên màng hình cho học sinh chọn
+     * Hàm để lấy hết tất cả các gói in ra để hiện lên màn hình cho học sinh chọn
      * mua
      * 
      * Lấy các đối tượng PrintPackage từ database và chuyển thành danh sách
-     * PackagePrintResponse -> trả về
+     * BuyPackageResponse -> trả về
      */
     @Override
-    public Page<PackagePrintResponse> getPackagePrint(Integer pageNo, Integer pageSize) {
+    public Page<BuyPackageResponse> getPackagePrint(Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        return null;
+        Page<PrintPackage> printPackages = printPackageRepository.findAll(pageable);
+        List<BuyPackageResponse> responses = printPackages.stream()
+                .map((item) -> BuyPackageResponse.builder().idPackage(item.getId()).namePackage(item.getName())
+                        .quantityPage(item.getPageQuantity())
+                        .pricePackage(item.getPage().getPrice() * item.getPageQuantity()).build())
+                .collect(Collectors.toList());
+        return new PageImpl<>(responses, pageable, responses.size());
     }
 
 }

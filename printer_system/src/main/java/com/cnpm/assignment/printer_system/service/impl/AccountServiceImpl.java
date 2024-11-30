@@ -162,8 +162,7 @@ public class AccountServiceImpl implements AccountService {
                         .email(user.getEmail())
                         .fullName(user.getFullName()).phoneNumber(user.getPhoneNumber()).sex(user.getSex().getValue())
                         .urlAvatar(user.getUrlAvatar()).build();
-                if (user instanceof Student) {
-                    Student student = (Student) user;
+                if (user instanceof Student student) {
                     response.setMssv(student.getMssv());
                 } else {
                     response.setMssv("");
@@ -194,8 +193,7 @@ public class AccountServiceImpl implements AccountService {
                 User user = userRepository.findByEmailAndActive(userDetails.getUsername(), true)
                         .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại!"));
                 QAndA qAndA;
-                if (user instanceof Student) {
-                    Student student = (Student) user;
+                if (user instanceof Student student) {
                     qAndA = qAndARepository.findByIdAndStudent(idQAndA, student)
                             .orElseThrow(() -> new CNPMNotFoundException("Chủ đề này của bạn không tồn tại...!"));
                 } else if (user instanceof SPSO) {

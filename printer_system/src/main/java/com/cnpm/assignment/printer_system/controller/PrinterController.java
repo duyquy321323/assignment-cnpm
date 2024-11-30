@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cnpm.assignment.printer_system.response.PackagePrintResponse;
 import com.cnpm.assignment.printer_system.service.PrinterService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +42,7 @@ public class PrinterController {
         content=@Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))
     )
     @Operation(summary = "Lấy ra các gói in", description = "Các gói in có thể mua trong trang mua gói in của sinh viên, ....")
-    public ResponseEntity<Page<PackagePrintResponse>> getPackagePrints(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
+    public ResponseEntity<?> getPackagePrints(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
             @RequestParam(defaultValue = "6", required = false) Integer pageSize) {
         return ResponseEntity.ok(printerService.getPackagePrint(pageNo, pageSize));
     }
