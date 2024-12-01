@@ -1,79 +1,90 @@
-import { Avatar } from "@mui/material";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import UserImage from "../../assets/image/UserInfoImage.svg";
+import { openUpload } from "../../redux/action";
+import api from "../api";
+import UploadModel from "../UploadModelAvatar";
 import "./UserProfile.css";
+
+const formatDate = (dateString) => {
+    return dayjs(dateString).format('YYYY-MM-DD');
+  };
 
 const UserProfile = () => {
 
-    const [ userProfile, setUserProfile ] = useState([]);
+    const dispatch = useDispatch()
+
+    const [user, setUser] = useState({
+        urlAvatar: null,
+        mssv: "",
+        birthday: "",
+        email: "",
+        fullName: "",
+        sex: "",
+        phoneNumber: "",
+    });
+
+    async function getInfo() {
+        try{
+            const response = await api.get(`account/information`);
+            setUser(response.data);
+        }catch(e){
+            console.error(e);
+        }
+    }
 
     useEffect(() => {
-        const fakedata = [
-            { mmsv: 2210972, birth: "01/01/2024", email: "a.nguyenvan@hcmut.edu.vn", name: "Nguyễn Văn A", gender: "Nam", phone: "0123456789" },
-        ];
-        setUserProfile(fakedata);
+        getInfo();
     }, []);
 
 
 
     return (
         <div className="user-backgr">
+            <UploadModel getNewListFile={getInfo}/>
             <div className="user-container">
-                <div className="user-main">
-                    <div className="user-wrapper">
-                        <div className="user-text">
-                            <span>Hồ Sơ Người Dùng</span>
+                <div className="header-user">
+                    <h2>Hồ sơ người dùng</h2>
+                </div>
+                <button className="button-change-user" onClick={() => dispatch(openUpload())}>Change avatar</button>
+                <div className="content-user">
+                    <div className="title-user">
+                        <h3>Thông tin cá nhân</h3>
+                        <img src={user.urlAvatar || UserImage} alt="UserImage"/>
+                    </div>
+                    <div className="form-user">
+                        <div className="form-left form">
+                            <div className="inp-box">
+                                <label htmlFor="mssv">Mã số sinh viên</label>
+                                <input type="text" id="mssv" value={user.mssv} disabled/>
+                            </div>
+                            <div className="inp-box">
+                                <label htmlFor="birth">Ngày sinh</label>
+                                <input type="text" id="birth" value={formatDate(user.birthday)} disabled/>
+                            </div>
+                            <div className="inp-box">
+                                <label htmlFor="email">Email sinh viên</label>
+                                <input type="text" id="email" value={user.email} disabled/>
+                            </div>
                         </div>
-                        <div className="user-infor">
-                            <div className="button-change">
-                                <button className="my-button-change">Change Avatar</button>
+                        <div className="form-right form">
+                            <div className="inp-box">
+                                <label htmlFor="fullname">Họ và tên</label>
+                                <input type="text" id="fullname" value={user.fullName} disabled/>
                             </div>
-                            {userProfile.map(user => (
-                                <div className="user-information">
-                                <div className="user-avatar">
-                                    <ul>Thông tin cá nhân</ul>
-                                    
-                                    <Avatar className="view-avatar-pro"
-                                    src=""
-                                    />
-                                </div>
-                                <div className="infor-left">
-                                    <ul className="infor-pro">
-                                        <span>Mã số sinh viên</span>
-                                        <div className="pro-box">{user.mssv}</div>
-                                    </ul>
-
-                                    <ul className="infor-pro">
-                                        <span>Ngày sinh</span>
-                                        <div className="pro-box">{user.birth}</div>
-                                    </ul>
-
-                                    <ul className="infor-pro">
-                                        <span>Email sinh viên</span>
-                                        <div className="pro-box">{user.email}</div>
-                                    </ul>
-                                </div>
-                                <div className="infor-right">
-                                <ul className="infor-pro">
-                                        <span>Họ và tên</span>
-                                        <div className="pro-box">{user.name}</div>
-                                    </ul>
-
-                                    <ul className="infor-pro">
-                                        <span>Giới tính</span>
-                                        <div className="pro-box">{user.gender}</div>
-                                    </ul>
-
-                                    <ul className="infor-pro">
-                                        <span>Số điện thoại</span>
-                                        <div className="pro-box">{user.phone}</div>
-                                    </ul>
-                                </div>
+                            <div className="inp-box">
+                                <label htmlFor="sex">Giới tính</label>
+                                <input type="text" id="sex" value={user.sex} disabled/>
                             </div>
-                            ))}
+                            <div className="inp-box">
+                                <label htmlFor="phone">Số điện thoại</label>
+                                <input type="text" id="phone" value={user.phoneNumber} disabled/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+        </div>
         </div>
     );
 };

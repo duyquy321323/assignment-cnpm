@@ -163,7 +163,7 @@ const UserManagement = () => {
                           </Box>
                         </TableCell>
                         <TableCell>{item.email}</TableCell>
-                        <TableCell>{formatDate(item.lastAccessedDate)}</TableCell>
+                        <TableCell>{(item.lastAccessedDate)? formatDate(item.lastAccessedDate) : "Chưa truy cập lần nào"}</TableCell>
                         <TableCell
                           sx={{
                             ".MuiButtonBase-root": { textTransform: "none" },

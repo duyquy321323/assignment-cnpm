@@ -48,6 +48,7 @@ const PrinterManagement = () => {
       console.log(searchForm);
       const response = await api.post(`spso/printer?pageNo=0&pageSize=50`, searchForm);
       setListPrinters(response.data.content);
+      console.log(response.data.content);
     }catch(e){
       console.error(e);
     }

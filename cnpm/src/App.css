@@ -37,6 +37,8 @@
   }
 } */
 
+@import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
+
 /* Reset mặc định */
 body, html, .app {
   margin: 0;
