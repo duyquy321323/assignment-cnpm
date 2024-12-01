@@ -1,17 +1,18 @@
-import React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlaceIcon from "@mui/icons-material/Place";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import React from "react";
 
-const StateMenu = () => {
+const StateMenu = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const { onChange } = props;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -37,24 +38,34 @@ const StateMenu = () => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        onChange={onChange}
         MenuListProps={{
           "aria-labelledby": "btn-select-state",
         }}
         sx={{ "&:hover .MuiButtonBase-root": { color: "black" } }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => {
+            onChange("statusSPSO", "ACTIVE");
+            handleClose();
+          }}>
           <ListItemIcon>
             <PlaceIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Hoạt động</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => {
+            onChange("statusSPSO", "MAINTENANCE");
+            handleClose();
+        }}>
           <ListItemIcon>
             <PlaceIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Bảo trì</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => {
+            onChange("statusSPSO", "CONNECT_FALED")
+            handleClose();
+          }}>
           <ListItemIcon>
             <PlaceIcon fontSize="small" />
           </ListItemIcon>

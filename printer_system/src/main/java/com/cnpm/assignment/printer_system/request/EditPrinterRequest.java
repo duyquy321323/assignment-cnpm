@@ -1,6 +1,7 @@
 package com.cnpm.assignment.printer_system.request;
 
-import com.cnpm.assignment.printer_system.enumeration.Address;
+import java.time.LocalDateTime;
+
 import com.cnpm.assignment.printer_system.enumeration.PrinterStatusSPSO;
 
 import lombok.AllArgsConstructor;
@@ -11,11 +12,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchPrinterSPSORequest {
-    private Address address;
-    private PrinterStatusSPSO statusSPSO;
-    private Long idPrinter;
+@Builder
+public class EditPrinterRequest {
+    private PrinterStatusSPSO status;
+    private Long pageQuantity;
+    private LocalDateTime lastMaintenanceDate;
 }

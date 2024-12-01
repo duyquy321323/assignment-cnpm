@@ -1,123 +1,59 @@
-import React from "react";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Link from "@mui/material/Link";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Pagination from "@mui/material/Pagination";
 import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Button from "@mui/material/Button";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import Divider from "@mui/material/Divider";
-import Pagination from "@mui/material/Pagination";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Avatar from "@mui/material/Avatar";
-import InfoIcon from "@mui/icons-material/Info";
+import Typography from "@mui/material/Typography";
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from "react";
+import api from "../../api";
 import UserProfile from "../UserProfile";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
+
+const formatDate = (dateString) => {
+  return dayjs(dateString).format('YYYY-MM-DD');
+};
 
 const UserManagement = () => {
-  const listUsers = [
-    {
-      id: 1,
-      name: "NGUYỄN VĂN A",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 2,
-      name: "NGUYỄN VĂN B",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 3,
-      name: "NGUYỄN VĂN C",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 4,
-      name: "NGUYỄN VĂN D",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 5,
-      name: "NGUYỄN VĂN E",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 6,
-      name: "NGUYỄN VĂN F",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 7,
-      name: "NGUYỄN VĂN G",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 8,
-      name: "NGUYỄN VĂN H",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 9,
-      name: "NGUYỄN VĂN I",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-    {
-      id: 10,
-      name: "NGUYỄN VĂN J",
-      userId: "221xxxx",
-      email: "ten.sinhvien@hcmut.edu.vn",
-      phone: "0123456789",
-      birth: "01/01/2004",
-      status: "Hoạt động",
-    },
-  ];
+  const [listUsers,setListUsers] = useState([]);
+
+  const [nameSearch, setNameSearch] = useState(null);
+  const documentsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  async function searchStudent(){
+    try{
+      const response = await api.get(`spso/students?fullName=${nameSearch? nameSearch : " "}&pageNo=0&pageSize=50`);
+      setListUsers(response.data.content);
+      console.log(response.data.content);
+    }catch(e){
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    searchStudent()
+  }, [nameSearch])
+
   const [open, setOpen] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState({});
   const handleOpen = (item) => {
@@ -187,13 +123,10 @@ const UserManagement = () => {
                 id="outlined-adornment-search"
                 type="text"
                 endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton edge="end">
                       <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
                 }
                 label="Tìm kiếm"
+                onChange={(e) => setNameSearch(e.target.value)}
               />
             </FormControl>
             <Box
@@ -226,11 +159,11 @@ const UserManagement = () => {
                               alt=""
                               src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HCMUT_official_logo.png/1200px-HCMUT_official_logo.png"
                             />
-                            {item.name}
+                            {item.fullName}
                           </Box>
                         </TableCell>
                         <TableCell>{item.email}</TableCell>
-                        <TableCell>01/12/2024 12:00 AM</TableCell>
+                        <TableCell>{formatDate(item.lastAccessedDate)}</TableCell>
                         <TableCell
                           sx={{
                             ".MuiButtonBase-root": { textTransform: "none" },
@@ -263,7 +196,12 @@ const UserManagement = () => {
                     },
                   }}
                 >
-                  <Pagination count={10} color="primary" />
+                  <Pagination
+                            count={Math.ceil(listUsers.length / documentsPerPage)}
+                            page={currentPage}
+                            onChange={handleChangePage}
+                            color="primary"
+                        />
                 </Box>
               </TableContainer>
             </Box>

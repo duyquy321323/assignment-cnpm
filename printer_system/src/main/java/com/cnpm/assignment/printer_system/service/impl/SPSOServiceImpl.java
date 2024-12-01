@@ -1,5 +1,7 @@
 package com.cnpm.assignment.printer_system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,15 +12,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.cnpm.assignment.printer_system.entity.Content;
+import com.cnpm.assignment.printer_system.entity.PageDocument;
 import com.cnpm.assignment.printer_system.entity.PagePrinter;
 import com.cnpm.assignment.printer_system.entity.Printer;
 import com.cnpm.assignment.printer_system.entity.PrinterDocument;
+import com.cnpm.assignment.printer_system.entity.QAndA;
+import com.cnpm.assignment.printer_system.entity.SPSO;
 import com.cnpm.assignment.printer_system.entity.Student;
+import com.cnpm.assignment.printer_system.entity.User;
+import com.cnpm.assignment.printer_system.enumeration.ContentStatus;
+import com.cnpm.assignment.printer_system.exception.custom.CNPMNotFoundException;
 import com.cnpm.assignment.printer_system.repository.PrinterDocumentRepository;
 import com.cnpm.assignment.printer_system.repository.PrinterRepository;
+import com.cnpm.assignment.printer_system.repository.QAndARepository;
 import com.cnpm.assignment.printer_system.repository.StudentRepository;
+import com.cnpm.assignment.printer_system.repository.UserRepository;
+import com.cnpm.assignment.printer_system.request.EditPrinterRequest;
 import com.cnpm.assignment.printer_system.request.SearchPrinterSPSORequest;
 import com.cnpm.assignment.printer_system.response.PrintHistoryResponse;
 import com.cnpm.assignment.printer_system.response.PrinterSPSOResponse;
@@ -34,10 +50,16 @@ public class SPSOServiceImpl implements SPSOService {
     private PrinterRepository printerRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private StudentRepository studentRepository;
 
     @Autowired
     private PrinterDocumentRepository printerDocumentRepository;
+
+    @Autowired
+    private QAndARepository qAndARepository;
 
     /**
      * Hàm để tìm kiếm các máy in(Printer)
@@ -69,7 +91,7 @@ public class SPSOServiceImpl implements SPSOService {
             for (PagePrinter pagePrinter : item.getPagePrinters()) {
                 totalPage += pagePrinter.getPageQuantity();
             }
-            return PrinterSPSOResponse.builder().address(item.getAddress())
+            return PrinterSPSOResponse.builder().address(item.getAddress().getValue())
                     .lastMaintenanceDate(item.getLastMaintenanceDate()).pageQuantity(totalPage).id(item.getId())
                     .status(item.getPrinterStatusSPSO().getValue()).build();
         }).collect(Collectors.toList());
@@ -99,7 +121,8 @@ public class SPSOServiceImpl implements SPSOService {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Student> students = studentRepository.findByFullNameContaining(fullName, pageable);
         List<StudentResponse> responses = students.stream()
-                .map(item -> StudentResponse.builder().active(item.getActive()).birthday(item.getBirthday())
+                .map(item -> StudentResponse.builder().sex(item.getSex().getValue()).id(item.getId())
+                        .active(item.getActive()).birthday(item.getBirthday())
                         .email(item.getEmail()).fullName(item.getFullName())
                         .lastAccessedDate(item.getLastAccessedDate()).mssv(item.getMssv())
                         .phoneNumber(item.getPhoneNumber()).build())
@@ -124,11 +147,18 @@ public class SPSOServiceImpl implements SPSOService {
     public Page<PrintHistoryResponse> getHistoryPrint(Long studentId, Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<PrinterDocument> printerDocuments = printerDocumentRepository.findById_Document_Student_Id(studentId, pageable);
-        // List<PrintHistoryResponse> responses = printerDocuments.stream().map(item -> {
-            // return PrintHistoryResponse.builder().address(item.getId().getPrinter().getAddress()).datePrint(item.getPrintDate()).idPrinter(item.getId().getPrinter().getId()).nameDocument(item.getId().getDocument().getName()).pageResponses(pageResponses).build();
-        // }).collect(Collectors.toList());
-        return null;
+        Page<PrinterDocument> printerDocuments = printerDocumentRepository.findById_Document_Student_Id(studentId,
+                pageable);
+        List<PrintHistoryResponse> responses = new ArrayList<>();
+        for (PrinterDocument item : printerDocuments) {
+            for (PageDocument pageDocument : item.getId().getDocument().getPageDocuments()) {
+                responses.add(PrintHistoryResponse.builder().address(item.getId().getPrinter().getAddress().getValue())
+                        .datePrint(item.getPrintDate()).idPrinter(item.getId().getPrinter().getId())
+                        .nameDocument(item.getId().getDocument().getName()).quantityPage(pageDocument.getPageQuantity())
+                        .typePage(pageDocument.getId().getPage().getType().getValue()).build());
+            }
+        }
+        return new PageImpl<>(responses, pageable, responses.size());
     }
 
     /**
@@ -138,6 +168,10 @@ public class SPSOServiceImpl implements SPSOService {
     @Override
     public void changeActive(Long studentId) {
         // TODO
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new CNPMNotFoundException("Học sinh không tồn tại...!"));
+        student.setActive(!student.getActive());
+        studentRepository.save(student);
     }
 
     /**
@@ -153,7 +187,31 @@ public class SPSOServiceImpl implements SPSOService {
     public Page<QAndAResponse> getHistoryQAndA(Integer pageNo, Integer pageSize) {
         // TODO
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        return null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails;
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userRepository.findByEmailAndActive(userDetails.getUsername(), true)
+                    .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại...!"));
+            if (user instanceof SPSO spso) {
+                Page<QAndA> qAndAs = qAndARepository.findBySpso(spso, pageable);
+                Page<QAndA> qAndAsNull = qAndARepository.findBySpso(null, pageable);
+                List<QAndAResponse> responses = new ArrayList<>();
+                responses.addAll(qAndAs.stream().map(item -> QAndAResponse.builder()
+                        .dateQuestion(item.getContents().getLast().getDateQuestion()).firstQuestion(item.getTitle())
+                        .idQAndA(item.getId()).nameOfStudent(item.getStudent().getFullName())
+                        .status(item.getContents().getLast().getStatus().getValue()).build())
+                        .collect(Collectors.toList()));
+                responses.addAll(qAndAsNull.stream().map(item -> QAndAResponse.builder()
+                        .dateQuestion(item.getContents().getLast().getDateQuestion()).firstQuestion(item.getTitle())
+                        .idQAndA(item.getId()).nameOfStudent(item.getStudent().getFullName())
+                        .status(item.getContents().getLast().getStatus().getValue()).build())
+                        .collect(Collectors.toList()));
+                return new PageImpl<>(responses, pageable, responses.size());
+            }
+        }
+        throw new CNPMNotFoundException("Tài khoản chưa xác thực. Vui lòng đăng nhập lại...!");
     }
 
     /**
@@ -164,5 +222,42 @@ public class SPSOServiceImpl implements SPSOService {
     @Override
     public void sendAnswer(Long idQAndA, String message) {
         // TODO
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails;
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userRepository.findByEmailAndActive(userDetails.getUsername(), true)
+                    .orElseThrow(() -> new CNPMNotFoundException("Tài khoản không tồn tại...!"));
+            if (user instanceof SPSO spso) {
+                QAndA qAndA = qAndARepository.findById(idQAndA)
+                        .orElseThrow(() -> new CNPMNotFoundException("Chủ để này không tồn tại...!"));
+                Content content = qAndA.getContents().getLast();
+                if (qAndA.getSpso() == null) {
+                    qAndA.setSpso(spso);
+                }
+                content.setAnswer(message);
+                content.setDateAnswer(LocalDateTime.now());
+                content.setStatus(ContentStatus.HAS_ANSWERED);
+                qAndARepository.save(qAndA);
+                return;
+            }
+        }
+        throw new CNPMNotFoundException("Tài khoản chưa xác thực. Vui lòng đăng nhập lại...!");
+    }
+
+    /**
+     * Hàm này dành cho admin dùng để chỉnh sửa máy in
+     * chỉnh sửa tình trạng của máy in hiện tại bằng id
+     * 
+     */
+    @Override
+    public void editPrinter(EditPrinterRequest request, Long idPrinter) {
+        // TODO
+        Printer printer = printerRepository.findById(idPrinter).orElseThrow(() -> new CNPMNotFoundException("Máy in không tồn tại...!"));
+        printer.setLastMaintenanceDate(request.getLastMaintenanceDate());
+        printer.getPagePrinters().getFirst().setPageQuantity(request.getPageQuantity());
+        printer.setPrinterStatusSPSO(request.getStatus());
+        printerRepository.save(printer);
     }
 }

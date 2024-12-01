@@ -1,99 +1,78 @@
-import React from "react";
+import AdfScannerIcon from "@mui/icons-material/AdfScanner";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Box from "@mui/material/Box";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Link from "@mui/material/Link";
+import Pagination from "@mui/material/Pagination";
 import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Button from "@mui/material/Button";
-import AdfScannerIcon from "@mui/icons-material/AdfScanner";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import React, { useEffect, useState } from "react";
+import api from "../../api";
 import LocationMenu from "../LocationMenu";
-import StateMenu from "../StateMenu";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import Pagination from "@mui/material/Pagination";
 import ModifyPrinter from "../ModifyPrinter";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
+import StateMenu from "../StateMenu";
+
+import dayjs from "dayjs";
+
+const formatDate = (dateString) => {
+  return dayjs(dateString).format('YYYY-MM-DD');
+};
 
 const PrinterManagement = () => {
-  const [listPrinters, setListPrinters] = React.useState([
-    {
-      id: 1,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Hoạt động",
-      pagesLeft: "50 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 2,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      status: "Hoạt động",
-      pagesLeft: "35 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 3,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Hoạt động",
-      pagesLeft: "83 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 4,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Hoạt động",
-      pagesLeft: "100 trang",
-      lastMaintenance: "01/11/2024",
-    },
-    {
-      id: 5,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      status: "Bảo trì",
-      pagesLeft: "50 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 6,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Hoạt động",
-      pagesLeft: "50 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 7,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Hoạt động",
-      pagesLeft: "50 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 8,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      status: "Hoạt động",
-      pagesLeft: "65 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 9,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Mất kết nối",
-      pagesLeft: "50 trang",
-      lastMaintenance: "20/10/2024",
-    },
-    {
-      id: 10,
-      address: "268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      status: "Hoạt động",
-      pagesLeft: "50 trang",
-      lastMaintenance: "20/10/2024",
-    },
-  ]);
+  const [listPrinters, setListPrinters] = useState([]);
+  const documentsPerPage = 10;
+  const [searchForm, setSearchForm] = useState({
+    address: null,
+    statusSPSO: null,
+    idPrinter: null,
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  async function searchPrinter() {
+    try{
+      console.log(searchForm);
+      const response = await api.post(`spso/printer?pageNo=0&pageSize=50`, searchForm);
+      setListPrinters(response.data.content);
+    }catch(e){
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    searchPrinter();
+  }, []);
+
+  function handleChange(e, v){
+    if(v !== null){
+      const name = e;
+      setSearchForm((prev) => ({
+        ...prev,
+        [name]: v
+      }))
+    } else {
+    const { name, value } = e.target;
+    setSearchForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+  }
+
   const [selectedPrinter, setSelectedPrinter] = React.useState({});
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = (item) => {
@@ -104,9 +83,7 @@ const PrinterManagement = () => {
     setOpen(false);
   };
   const handleSave = (updatedPrinter) => {
-    setListPrinters((printersList) =>
-      printersList.map((printer) => (printer.id === updatedPrinter.id ? updatedPrinter : printer))
-    );
+    searchPrinter()
     setOpen(false);
   };
 
@@ -162,23 +139,24 @@ const PrinterManagement = () => {
               ".MuiButtonBase-root": { textTransform: "none" },
             }}
           >
-            <LocationMenu />
+            <LocationMenu onChange={handleChange} />
             <Divider
               orientation="vertical"
               variant="middle"
               flexItem
               sx={{ "&.MuiDivider-root": { borderWidth: "1px" } }}
             />
-            <StateMenu />
+            <StateMenu onChange={handleChange} />
             <Divider
               orientation="vertical"
               variant="middle"
               flexItem
+              onChange={handleChange}
               sx={{ "&.MuiDivider-root": { borderWidth: "1px" } }}
             />
             <Box>
               <Typography variant="h6">Số thứ tự máy in</Typography>
-              <TextField id="standard-search" label="Nhập số thứ tự máy in" type="search" variant="standard" />
+              <TextField id="standard-search" onChange={(e) => handleChange(e)} name="idPrinter" label="Nhập số thứ tự máy in" type="search" variant="standard" />
             </Box>
             <Divider
               orientation="vertical"
@@ -194,6 +172,7 @@ const PrinterManagement = () => {
                 height: "55px",
                 fontSize: "1.2rem",
               }}
+              onClick={searchPrinter}
             >
               Search
             </Button>
@@ -240,8 +219,8 @@ const PrinterManagement = () => {
                       >
                         {item.status}
                       </TableCell>
-                      <TableCell>{item.pagesLeft}</TableCell>
-                      <TableCell>{item.lastMaintenance}</TableCell>
+                      <TableCell>{item.pageQuantity}</TableCell>
+                      <TableCell>{item.lastMaintenanceDate? formatDate(item.lastMaintenanceDate) : item.lastMaintenanceDate}</TableCell>
                       <TableCell
                         sx={{
                           ".MuiButtonBase-root": { textTransform: "none" },
@@ -272,7 +251,12 @@ const PrinterManagement = () => {
                   ".css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected": { backgroundColor: "#09bcff" },
                 }}
               >
-                <Pagination count={10} color="primary" />
+                <Pagination
+                            count={Math.ceil(listPrinters.length / documentsPerPage)}
+                            page={currentPage}
+                            onChange={handleChangePage}
+                            color="primary"
+                        />
               </Box>
             </TableContainer>
           </Box>

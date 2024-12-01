@@ -98,8 +98,8 @@ public class StudentController {
 
     @PostMapping("/question")
     @Operation(summary = "Tạo câu hỏi", description = "Tạo câu hỏi trong chủ đề có sẵn hoặc chủ để mới")
-    public ResponseEntity<?> questionQAndA(@RequestParam(required = false) Long idQAndA, @RequestParam String message) {
-        studentService.createQuestion(idQAndA, message);
+    public ResponseEntity<?> questionQAndA(@RequestParam(required = false) Long idQAndA, @RequestParam(required=false) String title, @RequestParam String message) {
+        studentService.createQuestion(idQAndA, title, message);
         return ResponseEntity.ok().build();
     }
 }

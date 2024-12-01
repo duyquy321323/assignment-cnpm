@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.cnpm.assignment.printer_system.enumeration.Address;
 import com.cnpm.assignment.printer_system.enumeration.PrinterStatusSPSO;
 import com.cnpm.assignment.printer_system.enumeration.PrinterStatusStudent;
 
@@ -35,13 +36,13 @@ public class Printer {
     private Long id;
 
     @Column(nullable = false)
-    private String address;
+    @Enumerated(EnumType.STRING)
+    private Address address;
 
     private Long timeout;
 
     @Column(name = "date_of_use")
     private LocalDateTime dateOfUse;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status_student", nullable = false)
     private PrinterStatusStudent printerStatusStudent;

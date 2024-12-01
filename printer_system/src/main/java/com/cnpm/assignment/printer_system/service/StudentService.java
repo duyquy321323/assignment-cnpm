@@ -30,7 +30,7 @@ public interface StudentService {
 
     public Page<DetailBillResponse> getDetailBills(Integer pageNo, Integer pageSize);
 
-    public void createQuestion(Long idQAndA, String message);
+    public void createQuestion(Long idQAndA, String title, String message);
 
     public void deleteUploadedDocument(Long idDocument);
 }

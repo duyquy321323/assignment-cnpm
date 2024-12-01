@@ -237,7 +237,7 @@ public class StudentServiceImpl implements StudentService {
                             .findById_Document_StudentAndId_Printer(student, item, PageRequest.of(0, 2));
                     List<String> history = pdList.stream().map(it -> it.getId().getDocument().getName())
                             .collect(Collectors.toList());
-                    return PrinterStudentResponse.builder().address(item.getAddress()).dateOfUse(item.getDateOfUse())
+                    return PrinterStudentResponse.builder().address(item.getAddress().getValue()).dateOfUse(item.getDateOfUse())
                             .historyUse(history).id(item.getId()).status(item.getPrinterStatusStudent().getValue())
                             .timeout(item.getTimeout()).build();
                 }).collect(Collectors.toList());
@@ -323,7 +323,7 @@ public class StudentServiceImpl implements StudentService {
                 List<HistoryPaymentResponse> responsesList = bills.stream().map(item -> {
                     Long sumPage = 0L;
                     for (BillPrintPackage p : item.getBillPrintPackages()) {
-                        sumPage += p.getId().getPrintPackage().getPageQuantity();
+                        sumPage += p.getId().getPrintPackage().getPageQuantity() * p.getPackageQuantity();
                     }
                     return HistoryPaymentResponse.builder().datePayment(item.getDatePayment()).idBill(item.getId())
                             .pageQuantity(sumPage).statusPayment(item.getStatus().getValue())
@@ -454,7 +454,7 @@ public class StudentServiceImpl implements StudentService {
      * Còn nếu không null thì tạo câu hỏi mới trong QAndA đó
      */
     @Override
-    public void createQuestion(Long idQAndA, String message) {
+    public void createQuestion(Long idQAndA, String title, String message) {
         // TODO
 
         // Kiểm tra người dùng hiện tại
@@ -472,7 +472,7 @@ public class StudentServiceImpl implements StudentService {
                 if(idQAndA != null){
                     qAndA = qAndARepository.findByIdAndStudent(idQAndA, student).orElseThrow(() -> new CNPMNotFoundException("Chủ để này của bạn không tồn tại...!"));
                 }else{
-                    qAndA = QAndA.builder().contents(new ArrayList<>()).student(student).build();
+                    qAndA = QAndA.builder().contents(new ArrayList<>()).title(title).student(student).build();
                 }
                 content.setId(ContentId.builder().qAndA(qAndA).build());
                 qAndA.getContents().add(content);

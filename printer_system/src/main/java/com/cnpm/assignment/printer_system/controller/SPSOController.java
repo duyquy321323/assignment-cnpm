@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cnpm.assignment.printer_system.request.EditPrinterRequest;
 import com.cnpm.assignment.printer_system.request.SearchPrinterSPSORequest;
 import com.cnpm.assignment.printer_system.service.SPSOService;
 
@@ -63,6 +64,13 @@ public class SPSOController {
     @Operation(summary = "Trả lời câu hỏi", description = "Trả lời câu hỏi mới nhất trong 1 chủ đề")
     public ResponseEntity<?> answerQAndA(@RequestParam Long idQAndA, @RequestParam String message) {
         spsoService.sendAnswer(idQAndA, message);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/printer")
+    @Operation(summary = "Chỉnh sửa máy in", description = "Chỉnh sửa máy in bằng id")
+    public ResponseEntity<?> editPrinter(@RequestParam Long idPrinter, @RequestBody EditPrinterRequest request) {
+        spsoService.editPrinter(request, idPrinter);
         return ResponseEntity.ok().build();
     }
 }

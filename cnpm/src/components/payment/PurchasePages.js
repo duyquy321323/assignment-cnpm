@@ -1,72 +1,74 @@
 // components/documents/Documents.js
 
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderIcon from '@mui/icons-material/Folder';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import { Avatar, Box, Button, Card, CardContent, CardMedia, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Backdrop, Box, Button, Card, CardMedia, Checkbox, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 import './PaymentHistory.css'; // Import CSS file
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import white_paper from '../../assets/image/white-paper.png';
-import color_paper from '../../assets/image/color-paper.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { closeBackDrop, openBackDrop } from '../../redux/action';
 
 
 
 const PaymentHistory = () => {
     const [products, setProducts] = useState([]);
-    const [selectedDocuments, setSelectedDocuments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const documentsPerPage = 3;
-    const [openUploadDialog, setOpenUploadDialog] = useState(false);
+    const dispatch = useDispatch();
+    const open = useSelector(state => state.backdropAction);
     const navigate = useNavigate();
     useEffect(() => {
         // Giả lập dữ liệu tài liệu
-        const products = [
-            { id: 1, printingpack: "Gói in thường số 1", numPage: "20 trang", price: 10000, image: white_paper },
-            { id: 2, printingpack: "Gói in thường số 2", numPage: "40 trang", price: 19000, image: white_paper },
-            { id: 3, printingpack: "Gói in thường số 3", numPage: "80 trang", price: 35000, image: white_paper },
-            { id: 4, printingpack: "Gói in màu số 1", numPage: "20 trang", price: 25000, image: color_paper },
-            { id: 5, printingpack: "Gói in màu số 2", numPage: "40 trang", price: 48000, image: color_paper },
-            { id: 6, printingpack: "Gói in màu số 3", numPage: "80 trang", price: 90000, image: color_paper },
-        ];
-        setProducts(products);
+        async function getPackagePrint(){
+            try{
+                dispatch(openBackDrop());
+                const response = await api.get(`printer/package-print?pageNo=0&pageSize=50`);
+                setProducts(response.data.content);
+            }catch(e){
+                console.error(e);
+            }
+            dispatch(closeBackDrop());
+        }
+        getPackagePrint()
     }, []);
     const [openDialog, setOpenDialog] = useState(false);
     const [cart, setCart] = useState([]);
     const totalPrice = cart.reduce((sum, item) => {
-        return sum + (item.price || 0) * item.quantity;
+        return sum + (item.pricePackage || 0) * item.quantityPage;
     }, 0);
-
+    console.log(cart);
     const handleAddProduct = (productId) => {
         setCart((prevCart) => {
             return prevCart.map((item) =>
-                item.id === productId
-                    ? { ...item, quantity: item.quantity + 1 }
+                item.idPackage === productId
+                    ? { ...item, quantityPage: item.quantityPage + 1 }
                     : item
             );
         });
     };
-
     const handleRemoveProduct = (productId) => {
         setCart((prevCart) => {
-            const existingProduct = prevCart.find((item) => item.id === productId);
+            const existingProduct = prevCart.find((item) => item.idPackage === productId);
 
             if (existingProduct) {
                 // Giảm số lượng hoặc xóa sản phẩm nếu số lượng = 1
-                return existingProduct.quantity > 1
+                return existingProduct.quantityPage > 1
                     ? prevCart.map((item) =>
-                        item.id === productId
-                            ? { ...item, quantity: item.quantity - 1 }
+                        item.idPackage === productId
+                            ? { ...item, quantityPage: item.quantityPage - 1 }
                             : item
                     )
-                    : prevCart.filter((item) => item.id !== productId);
+                    : prevCart.filter((item) => item.idPackage !== productId);
             }
 
             return prevCart; // Nếu sản phẩm không tồn tại, không thay đổi gì
@@ -76,12 +78,25 @@ const PaymentHistory = () => {
     const handleSelectDocument = (event, product) => {
         if (event.target.checked) {
             // Thêm sản phẩm vào giỏ hàng nếu được tick
-            setCart((prevCart) => [...prevCart, { ...product, quantity: 1 }]);
+            setCart((prevCart) => [...prevCart, { ...product, quantityPage: 1 }]);
         } else {
             // Xóa sản phẩm khỏi giỏ hàng nếu bỏ tick
-            setCart((prevCart) => prevCart.filter((item) => item.id !== product.id));
+            setCart((prevCart) => prevCart.filter((item) => item.idPackage !== product.idPackage));
         }
     };
+
+    async function handlePayment(){
+        let request = [];
+        request = cart.map(item => ({idPackagePrint: item.idPackage, quantityPackagePrint: item.quantityPage}));
+        try{
+            dispatch(openBackDrop());
+            await api.post(`student/pay`, request);
+            navigate("/payment");
+        }catch(e){
+            console.error(e);
+        }
+        dispatch(closeBackDrop());
+    }
 
     const handleHomePageClick = () => {
         navigate(`/home`);
@@ -114,6 +129,12 @@ const PaymentHistory = () => {
 
     return (
         <Container maxWidth="lg" className="documents-container">
+            <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
             <Stack spacing={1}>
                 <Breadcrumbs separator="›" className="breadcrumb">
                     {breadcrumbs}
@@ -141,19 +162,19 @@ const PaymentHistory = () => {
                         </TableHead>
                         <TableBody className="table-body">
                             {currentProducts.map((doc) => (
-                                <TableRow key={doc.id}>
+                                <TableRow key={doc.idPackage}>
                                     <TableCell component="th" scope="row">
-                                        <FolderIcon /> {doc.printingpack}
+                                        <FolderIcon /> {doc.namePackage}
                                     </TableCell>
                                     <TableCell>
-                                        <DescriptionIcon /> {doc.numPage}
+                                        <DescriptionIcon /> {doc.quantityPage}
                                     </TableCell>
                                     <TableCell>
-                                        <AttachMoneyIcon /> {doc.price}đ
+                                        <AttachMoneyIcon /> {doc.pricePackage}đ
                                     </TableCell>
                                     <TableCell>
                                         <Checkbox
-                                            checked={cart.some((item) => item.id === doc.id)} // Kiểm tra sản phẩm có trong giỏ hàng không
+                                            checked={cart.some((item) => item.idPackage === doc.idPackage)} // Kiểm tra sản phẩm có trong giỏ hàng không
                                             onChange={(event) => handleSelectDocument(event, doc)} // Thêm hoặc xóa sản phẩm
                                         />
 
@@ -187,7 +208,7 @@ const PaymentHistory = () => {
                         <Card sx={{ padding: 2, borderRadius: 2, boxShadow: 3, backgroundColor: '#fafafa' }}>
                             {cart.map((product) => (
                                 <Box
-                                    key={product.id}
+                                    key={product.idPackage}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'row',
@@ -212,24 +233,24 @@ const PaymentHistory = () => {
                                     <Box sx={{ flex: 1 }}>
                                         {/* Tên sản phẩm */}
                                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                            {product.printingpack}
+                                            {product.namePackage}
                                         </Typography>
                                         {/* Giá */}
                                         <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 1 }}>
-                                            Giá: {product.price.toLocaleString()}đ
+                                            Giá: {product.pricePackage.toLocaleString()}đ
                                         </Typography>
                                         {/* Điều chỉnh số lượng */}
                                         <Box display="flex" alignItems="center" justifyContent="space-between">
                                             <IconButton
                                                 color="primary"
-                                                onClick={() => handleRemoveProduct(product.id)}
+                                                onClick={() => handleRemoveProduct(product.idPackage)}
                                             >
                                                 <RemoveCircleOutlineIcon />
                                             </IconButton>
-                                            <Typography variant="body1">{product.quantity} sản phẩm</Typography>
+                                            <Typography variant="body1">{product.quantityPage} sản phẩm</Typography>
                                             <IconButton
                                                 color="primary"
-                                                onClick={() => handleAddProduct(product.id)}
+                                                onClick={() => handleAddProduct(product.idPackage)}
                                             >
                                                 <AddCircleOutlineIcon />
                                             </IconButton>
@@ -253,7 +274,7 @@ const PaymentHistory = () => {
                         <Button onClick={handleCloseDialog} color="primary">
                             Đóng
                         </Button>
-                        <Button variant="contained" color="secondary">
+                        <Button onClick={handlePayment} variant="contained" color="secondary">
                             Thanh toán
                         </Button>
                     </DialogActions>

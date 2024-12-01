@@ -82,7 +82,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/spso/students**", "/spso/history-print**",
                                 "/spso/history-q-and-a**")
                         .hasRole("SPSO")
-                        .antMatchers(HttpMethod.PUT, "/spso/change-active**")
+                        .antMatchers(HttpMethod.PUT, "/spso/change-active**", "/spso/printer**")
                         .hasRole("SPSO")
                         .antMatchers(HttpMethod.POST, "/account/logout")
                         .authenticated()

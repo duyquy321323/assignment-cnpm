@@ -1,52 +1,75 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
 import DoneIcon from "@mui/icons-material/Done";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
-import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import React, { useEffect, useState } from "react";
+
+import dayjs from "dayjs";
+import api from "../../api";
+
+const formatDate = (dateString) => {
+  return dayjs(dateString);
+};
 
 const status = [
   {
-    value: "Hoạt động",
-    label: "Hoạt động",
+    value: "ACTIVE",
+    label: "Hoạt Động",
   },
   {
-    value: "Bảo trì",
-    label: "Bảo trì",
+    value: "MAINTENANCE",
+    label: "Bảo Trì",
   },
   {
-    value: "Mất kết nối",
-    label: "Mất kết nối",
+    value: "CONNECT_FALED",
+    label: "Mất Kết Nối",
   },
 ];
 
-const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
-  const [selectedStatus, setSelectedStatus] = React.useState(printer.status);
-  const [date, setDate] = React.useState(dayjs());
-  const handleChangeStatus = (e) => {
-    setSelectedStatus(e.target.value);
-  };
+const ModifyPrinter = ({ open, handleClose, printer , handleSave}) => {
 
-  const handleDialogSave = () => {
-    handleSave({
-      ...printer,
-      status: selectedStatus,
-      pagesLeft: `${document.getElementById("outlined-pagesLeft").value} trang`,
-      lastMaintenance: date.format("DD/MM/YYYY"),
+  const [formEdit, setFormEdit] = useState({
+    status: (printer.status === "Hoạt Động"? "ACTIVE" : printer.status === "Bảo Trì"? "MAINTENANCE" : "CONNECT_FALED"),
+    lastMaintenanceDate: printer.lastMaintenanceDate,
+    pageQuantity: printer.pageQuantity,
+  });
+
+  // Đồng bộ formEdit với printer
+  useEffect(() => {
+    setFormEdit({
+      status: printer.status === "Hoạt Động"? "ACTIVE" : printer.status === "Bảo Trì"? "MAINTENANCE" : "CONNECT_FALED",
+      lastMaintenanceDate: printer.lastMaintenanceDate,
+      pageQuantity: printer.pageQuantity,
     });
-  };
+  }, [printer]);
 
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormEdit((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  async function handleEdit(){
+    try{
+      await api.put(`spso/printer?idPrinter=${printer.id}`, formEdit);
+      handleSave()
+    }catch(e){
+      console.error(e);
+    }
+  }
   return (
     <Dialog
       onClose={handleClose}
@@ -96,39 +119,31 @@ const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
           }}
           autoComplete="off"
         >
+          {console.log(formEdit)}
           <Box>
             <Typography gutterBottom>Trạng thái</Typography>
             <TextField
-              id="outlined-select-status"
-              select
-              defaultValue={printer.status}
-              value={selectedStatus}
-              onChange={handleChangeStatus}
-            >
-              {status.map((option) => (
-                <MenuItem
-                  sx={{
-                    "&.MuiMenuItem-root.Mui-selected": {
-                      bgcolor: "#09bcff",
-                    },
-                    "&:hover.MuiMenuItem-root": {
-                      color: "black",
-                    },
-                  }}
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
+            id="outlined-select-status"
+            select
+            value={formEdit.status || ""}
+            onChange={handleChange}
+            name="status"
+          >
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
           </Box>
           <Box>
             <Typography gutterBottom>Số trang còn lại</Typography>
             <TextField
               id="outlined-pagesLeft"
               type="number"
-              defaultValue={parseInt(printer.pagesLeft, 10)}
+              defaultValue={parseInt(printer.pageQuantity, 10)}
+              onChange={handleChange}
+              name="pageQuantity"
               slotProps={{
                 inputLabel: {
                   shrink: true,
@@ -139,7 +154,7 @@ const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
           <Box>
             <Typography gutterBottom>Ngày bảo trì cuối cùng</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker value={date} onChange={(newValue) => setDate(newValue)} />
+              <DatePicker value={formEdit.lastMaintenanceDate? formatDate(formEdit.lastMaintenanceDate) : null} onChange={(newValue) => setFormEdit((prev) => ({...prev, lastMaintenanceDate: newValue}))} />
             </LocalizationProvider>
           </Box>
         </Box>
@@ -147,7 +162,6 @@ const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
       <DialogActions>
         <Button
           autoFocus
-          onClick={handleDialogSave}
           startIcon={<DoneIcon sx={{ color: "white" }} />}
           variant="contained"
           sx={{
@@ -157,6 +171,7 @@ const ModifyPrinter = ({ open, handleClose, printer, handleSave }) => {
             width: "100px",
             color: "white",
           }}
+          onClick={handleEdit}
         >
           Lưu
         </Button>

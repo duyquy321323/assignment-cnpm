@@ -1,50 +1,64 @@
 // components/documents/Documents.js
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderIcon from '@mui/icons-material/Folder';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import HistoryIcon from '@mui/icons-material/History';
-import { Box, Button, Card, CardMedia, Checkbox, Container, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Backdrop, Box, Button, CardMedia, CircularProgress, Container, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './PaymentHistory.css'; // Import CSS file
-import white_paper from '../../assets/image/white-paper.png';
 import color_paper from '../../assets/image/color-paper.jpg';
+import white_paper from '../../assets/image/white-paper.png';
+import api from '../api';
+import './PaymentHistory.css'; // Import CSS file
+import { useDispatch, useSelector } from 'react-redux';
+import { closeBackDrop, openBackDrop } from '../../redux/action';
+
+const formatDate = (dateString) => {
+    return dayjs(dateString).format('YYYY-MM-DD');
+  };
+  
 
 const PaymentHistory = () => {
     const [documents, setDocuments] = useState([]);
     const [pageStorage, setPageStorage] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const documentsPerPage = 5;
-    const [openUploadDialog, setOpenUploadDialog] = useState(false);
+    const open = useSelector(state => state.backdropAction);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     useEffect(() => {
         // Giả lập dữ liệu tài liệu
-        const fakeDocuments = [
-            { id: 1, transaction: "Thanh toán tài liệu", numPage: "40 trang", cost: "19.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 2, transaction: "Thanh toán tài liệu", numPage: "20 trang", cost: "10.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 3, transaction: "Thanh toán tài liệu", numPage: "20 trang", cost: "10.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 4, transaction: "Thanh toán tài liệu", numPage: "40 trang", cost: "19.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 5, transaction: "Thanh toán tài liệu", numPage: "40 trang", cost: "19.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 6, transaction: "Thanh toán tài liệu", numPage: "80 trang", cost: "35.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 7, transaction: "Thanh toán tài liệu", numPage: "40 trang", cost: "19.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 8, transaction: "Thanh toán tài liệu", numPage: "40 trang", cost: "19.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 9, transaction: "Thanh toán tài liệu", numPage: "40 trang", cost: "19.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-            { id: 10, transaction: "Thanh toán tài liệu", numPage: "20 trang", cost: "10.000đ", date: "16/11/2024", status: "Đã thanh toán" },
-        ];
-        setDocuments(fakeDocuments);
+        async function getHistoryPay(){
+            try{
+                dispatch(openBackDrop());
+                const response = await api.get(`student/history-payment?pageNo=0&pageSize=50`)
+                setDocuments(response.data.content);
+            }catch(e){
+                console.error(e);
+            }
+            dispatch(closeBackDrop());
+        }
+        getHistoryPay()
     }, []);
     useEffect(() => {
         // Giả lập dữ liệu tài liệu
-        const fakePageStorage = [
-            { id: 1, type: "NORMAL", quantity: 57 },
-            { id: 2, type: "COLOR", quantity: 25 },
-        ];
-        setPageStorage(fakePageStorage);
+        async function getPageNow(){
+            try{
+                dispatch(openBackDrop());
+                const response = await api.get(`student/page`);
+                setPageStorage(response.data);
+            }catch(e){
+                console.error(e);
+            }
+            dispatch(closeBackDrop());
+        }
+        getPageNow();
     }, []);
     const handleHomePageClick = () => {
         navigate(`/home`);
@@ -64,6 +78,12 @@ const PaymentHistory = () => {
 
     return (
         <Container maxWidth="lg" className="documents-container">
+            <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
             <Stack spacing={1}>
                 <Breadcrumbs separator="›" className="breadcrumb">
                     {breadcrumbs}
@@ -83,14 +103,14 @@ const PaymentHistory = () => {
                                     className='card-media'
                                     image={color_paper} // Đường dẫn ảnh (thay bằng ảnh thực tế)
                                 />
-                                <Typography variant="body2" sx={{ marginLeft: '10px' }}>: {pageStorage.find((page) => page.type === "COLOR")?.quantity || 0} trang</Typography>  {/* Số trang thực tế */}
+                                <Typography variant="body2" sx={{ marginLeft: '10px' }}>: {pageStorage.find((page) => page.type === "Loại Màu")?.quantityPage || 0} trang</Typography>  {/* Số trang thực tế */}
                             </Box>
                             <Box display="flex" alignItems="center" sx={{ width: '48%' }}>
                                 <CardMedia
                                     className='card-media'
                                     image={white_paper} // Đường dẫn ảnh (thay bằng ảnh thực tế)
                                 />
-                                <Typography variant="body2" sx={{ marginLeft: '10px' }}>: {pageStorage.find((page) => page.type === "NORMAL")?.quantity || 0} trang</Typography>  {/* Số trang thực tế */}
+                                <Typography variant="body2" sx={{ marginLeft: '10px' }}>: {pageStorage.find((page) => page.type === "Loại Thường")?.quantityPage || 0} trang</Typography>  {/* Số trang thực tế */}
                             </Box>
                         </Box>
                     </Box>
@@ -110,21 +130,21 @@ const PaymentHistory = () => {
                         </TableHead>
                         <TableBody className="table-body">
                             {currentDocuments.map((doc) => (
-                                <TableRow key={doc.id}>
+                                <TableRow key={doc.idBill}>
                                     <TableCell component="th" scope="row">
-                                        <FolderIcon /> {doc.transaction}
+                                        <FolderIcon /> {doc.type}
                                     </TableCell>
                                     <TableCell>
-                                        <DescriptionIcon /> {doc.numPage}
+                                        <DescriptionIcon /> {doc.pageQuantity}
                                     </TableCell>
                                     <TableCell>
-                                        <AttachMoneyIcon /> {doc.cost}
+                                        <AttachMoneyIcon /> {doc.totalPrice}đ
                                     </TableCell>
                                     <TableCell>
-                                        <AccessTimeIcon /> {doc.date}
+                                        <AccessTimeIcon /> {formatDate(doc.datePayment)}
                                     </TableCell>
                                     <TableCell>
-                                        {doc.status}
+                                        {doc.statusPayment}
                                     </TableCell>
 
                                 </TableRow>

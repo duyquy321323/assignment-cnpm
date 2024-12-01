@@ -2,6 +2,7 @@ package com.cnpm.assignment.printer_system.service;
 
 import org.springframework.data.domain.Page;
 
+import com.cnpm.assignment.printer_system.request.EditPrinterRequest;
 import com.cnpm.assignment.printer_system.request.SearchPrinterSPSORequest;
 import com.cnpm.assignment.printer_system.response.PrintHistoryResponse;
 import com.cnpm.assignment.printer_system.response.PrinterSPSOResponse;
@@ -20,4 +21,6 @@ public interface SPSOService {
     public Page<QAndAResponse> getHistoryQAndA(Integer pageNo, Integer pageSize);
 
     public void sendAnswer(Long idQAndA, String message);
+
+    public void editPrinter(EditPrinterRequest request, Long idPrinter);
 }

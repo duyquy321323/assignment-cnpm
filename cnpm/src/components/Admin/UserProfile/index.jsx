@@ -1,21 +1,27 @@
-import React from "react";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid2";
+import Pagination from "@mui/material/Pagination";
 import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import Pagination from "@mui/material/Pagination";
-import Avatar from "@mui/material/Avatar";
-import Grid from "@mui/material/Grid2";
-import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import Chip from "@mui/material/Chip";
-import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from "react";
+import api from "../../api";
+
+const formatDate = (dateString) => {
+  return dayjs(dateString).format('YYYY-MM-DD');
+};
 
 const BoxStyled = {
   px: 2,
@@ -23,91 +29,40 @@ const BoxStyled = {
   color: "#DB4646",
 };
 
-const UserProfile = ({ user, handleClose }) => {
-  const historyPrint = [
-    {
-      date: "25/10/2024",
-      printerId: 6,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      fileName: "MMT.pdf",
-      pages: 10,
-      colorPages: 0,
-    },
-    {
-      date: "25/10/2024",
-      printerId: 7,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      fileName: "CNPM.pdf",
-      pages: 20,
-      colorPages: 9,
-    },
-    {
-      date: "13/09/2024",
-      printerId: 1,
-      address: "268, Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      fileName: "DBS.pdf",
-      pages: 14,
-      colorPages: 4,
-    },
-    {
-      date: "18/08/2024",
-      printerId: 5,
-      address: "268, Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      fileName: "abc.pdf",
-      pages: 22,
-      colorPages: 12,
-    },
-    {
-      date: "17/08/2024",
-      printerId: 6,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      fileName: "lich_su_Dang.pdf",
-      pages: 32,
-      colorPages: 10,
-    },
-    {
-      date: "12/08/2024",
-      printerId: 1,
-      address: "268, Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      fileName: "report.pdf",
-      pages: 26,
-      colorPages: 8,
-    },
-    {
-      date: "06/07/2024",
-      printerId: 7,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      fileName: "reportA.pdf",
-      pages: 30,
-      colorPages: 10,
-    },
-    {
-      date: "30/05/2024",
-      printerId: 6,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      fileName: "reportB.pdf",
-      pages: 35,
-      colorPages: 8,
-    },
-    {
-      date: "20/05/2024",
-      printerId: 8,
-      address: "VRJ4+65C, Đông Hòa, Dĩ An, Bình Dương",
-      fileName: "slide.pdf",
-      pages: 20,
-      colorPages: 0,
-    },
-    {
-      date: "10/05/2024",
-      printerId: 10,
-      address: "268, Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      fileName: "slide_A.pdf",
-      pages: 23,
-      colorPages: 5,
-    },
-  ];
+const UserProfile = ({ handleClose , user}) => {
 
-  const [active, setActive] = React.useState(true);
+  const [historyPrint, setHistoryPrint] = useState([]);
+  const documentsPerPage = 11;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  async function getHistoryPrint(){
+    try{
+      const response = await api.get(`spso/history-print?studentId=${user.id}&pageNo=0&pageSize=50`);
+      setHistoryPrint(response.data.content);
+    }catch(e){
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    getHistoryPrint();
+  }, [])
+  
+  const [active, setActive] = React.useState(user.active);
+
+  async function handleActive(e){
+    try{
+      console.log(user);
+      await api.put(`spso/change-active?studentId=${user.id}`);
+      setActive(!e.target.checked)
+    }catch(e){
+      console.error(e);
+    }
+  }
 
   return (
     <Paper elevation={2} width="100%">
@@ -145,7 +100,7 @@ const UserProfile = ({ user, handleClose }) => {
           />
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" , mt: 2 }}>
             <Chip size="small" label={active ? "Active" : "Inactive"} color={active ? "success" : "error"} />
-            <Switch checked={active} onChange={(e) => setActive(e.target.checked)} />
+            <Switch checked={active} onChange={handleActive} />
           </Box>
         </Box>
         <Divider
@@ -161,7 +116,7 @@ const UserProfile = ({ user, handleClose }) => {
                 <Box component="span" sx={BoxStyled}>
                   Họ và Tên:
                 </Box>
-                {user.name}
+                {user.fullName}
               </Typography>
             </Grid>
             <Grid size={6}>
@@ -169,7 +124,7 @@ const UserProfile = ({ user, handleClose }) => {
                 <Box component="span" sx={BoxStyled}>
                   Giới tính:
                 </Box>
-                Nam
+                {user.sex}
               </Typography>
             </Grid>
             <Grid size={6}>
@@ -177,7 +132,7 @@ const UserProfile = ({ user, handleClose }) => {
                 <Box component="span" sx={BoxStyled}>
                   Ngày sinh:
                 </Box>
-                {user.birth}
+                {formatDate(user.birthday)}
               </Typography>
             </Grid>
             <Grid size={6}>
@@ -185,7 +140,7 @@ const UserProfile = ({ user, handleClose }) => {
                 <Box component="span" sx={BoxStyled}>
                   Số điện thoại:
                 </Box>
-                {user.phone}
+                {user.phoneNumber}
               </Typography>
             </Grid>
             <Grid size={6}>
@@ -201,7 +156,7 @@ const UserProfile = ({ user, handleClose }) => {
                 <Box component="span" sx={BoxStyled}>
                   Mã số sinh viên:
                 </Box>
-                {user.userId}
+                {user.mssv}
               </Typography>
             </Grid>
           </Grid>
@@ -228,19 +183,19 @@ const UserProfile = ({ user, handleClose }) => {
                 <TableCell>STT máy in</TableCell>
                 <TableCell>Địa chỉ máy in</TableCell>
                 <TableCell>Tài liệu in</TableCell>
-                <TableCell sx={{ width: "9%" }}>Số lượng giấy thường</TableCell>
-                <TableCell sx={{ width: "9%" }}>Số lượng giấy màu</TableCell>
+                <TableCell sx={{ width: "9%" }}>Loại giấy</TableCell>
+                <TableCell sx={{ width: "9%" }}>Số lượng</TableCell>
               </TableRow>
             </TableHead>
             <TableBody className="table-body">
               {historyPrint.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell>{item.date}</TableCell>
-                  <TableCell>{item.printerId}</TableCell>
+                  <TableCell>{item.datePrint}</TableCell>
+                  <TableCell>{item.idPrinter}</TableCell>
                   <TableCell>{item.address}</TableCell>
-                  <TableCell>{item.fileName}</TableCell>
-                  <TableCell>{item.pages}</TableCell>
-                  <TableCell>{item.colorPages}</TableCell>
+                  <TableCell>{item.nameDocument}</TableCell>
+                  <TableCell>{item.typePage}</TableCell>
+                  <TableCell>{item.quantityPage}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -255,7 +210,12 @@ const UserProfile = ({ user, handleClose }) => {
               },
             }}
           >
-            <Pagination count={2} color="primary" />
+            <Pagination
+                            count={Math.ceil(historyPrint.length / documentsPerPage)}
+                            page={currentPage}
+                            onChange={handleChangePage}
+                            color="primary"
+                        />
           </Box>
         </TableContainer>
       </Box>

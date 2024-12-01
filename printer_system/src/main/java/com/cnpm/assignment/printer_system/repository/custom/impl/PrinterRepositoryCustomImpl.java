@@ -37,8 +37,8 @@ public class PrinterRepositoryCustomImpl implements PrinterRepositoryCustom {
         Root<Printer> rootPrinter = criteriaQuery.from(Printer.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if(request.getAddress() != null && !request.getAddress().isEmpty()){
-            predicates.add(criteriaBuilder.like(rootPrinter.get("address"), "%" + request.getAddress() + "%"));
+        if(request.getAddress() != null && !request.getAddress().getValue().isEmpty()){
+            predicates.add(criteriaBuilder.equal(rootPrinter.get("address"), request.getAddress()));
         }
         if(request.getIdPrinter() != null){
             predicates.add(criteriaBuilder.equal(rootPrinter.get("id"), request.getIdPrinter()));
@@ -75,8 +75,8 @@ public class PrinterRepositoryCustomImpl implements PrinterRepositoryCustom {
         Root<Printer> rootPrinter = criteriaQuery.from(Printer.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if(request.getAddress() != null && !request.getAddress().isEmpty()){
-            predicates.add(criteriaBuilder.like(rootPrinter.get("address"), "%" + request.getAddress() + "%"));
+        if(request.getAddress() != null && !request.getAddress().getValue().isEmpty()){
+            predicates.add(criteriaBuilder.equal(rootPrinter.get("address"), request.getAddress()));
         }
         if(request.getIdPrinter() != null){
             predicates.add(criteriaBuilder.equal(rootPrinter.get("id"), request.getIdPrinter()));

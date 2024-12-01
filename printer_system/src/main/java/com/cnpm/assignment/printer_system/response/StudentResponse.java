@@ -20,6 +20,7 @@ public class StudentResponse {
     private LocalDateTime lastAccessedDate;
     private String mssv;
     private LocalDateTime birthday;
+    private String sex;
     private String phoneNumber;
     private Boolean active;
 }

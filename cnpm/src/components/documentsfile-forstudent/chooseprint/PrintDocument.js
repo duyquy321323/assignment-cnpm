@@ -1,7 +1,9 @@
 import {
+  Backdrop,
   Box,
   Breadcrumbs,
   Button,
+  CircularProgress,
   Container,
   FormControl,
   Link,
@@ -19,11 +21,18 @@ import {
   TextField,
   Typography
 } from "@mui/material";
-import React, { useState } from "react";
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from "react";
 import { FcPrint } from "react-icons/fc";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
+import { closeBackDrop, openBackDrop } from "../../../redux/action";
+import api from "../../api";
 import "./PrintDocument.css";
 const ITEMS_PER_PAGE = 5; // Set number of rows per page
+const formatDate = (dateString) => {
+  return dayjs(dateString).format('YYYY-MM-DD');
+};
 
 const PrintDocument = () => {
   const [location, setLocation] = useState("");
@@ -31,17 +40,63 @@ const PrintDocument = () => {
   const [printerNumber, setPrinterNumber] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const selectDocuments = useSelector(state => state.filesAction);
+  console.log(selectDocuments);
+  const open = useSelector(state => state.backdropAction);
+  const [formSearch, setFormSearch] = useState({
+    address: null,
+    status: null,
+    idPrinter: null,
+  });
+
   // Example mock data
-  const mockData = [
-    { id: 1, address: "268 Lý Thường Kiệt, HCM", date: "2024-10-23", waitTime: "10 phút", usageHistory: "Bạn chưa sử dụng máy này", status: "Có tài liệu đang trong quá trình" },
-    { id: 2, address: "Vĩnh Lộc, Bình Dương", date: "2024-10-22", waitTime: "5 phút", usageHistory: "CNPdf lịch sử upload", status: "Máy in đã sẵn sàng" },
-    { id: 3, address: "268 Lý Thường Kiệt, HCM", date: "2024-10-23", waitTime: "3 phút", usageHistory: "abc.pdf", status: "Máy in đang in lại tài liệu bạn" },
-    { id: 4, address: "Vĩnh Lộc, Bình Dương", date: "2024-10-22", waitTime: "4 phút", usageHistory: "hestingsarea.pdf", status: "Có tài liệu đang trong quá trình" },
-    { id: 5, address: "268 Lý Thường Kiệt, HCM", date: "2024-10-23", waitTime: "7 phút", usageHistory: "syncdoc", status: "Máy in sẵn sàng" },
-    { id: 6, address: "Vĩnh Lộc, Bình Dương", date: "2024-10-22", waitTime: "6 phút", usageHistory: "hestings.pdf", status: "Máy in sẵn sàng" },
-    { id: 7, address: "Vĩnh Lộc, Bình Dương", date: "2024-10-22", waitTime: "8 phút", usageHistory: "Bạn chưa sử dụng máy này", status: "Có tài liệu đang trong quá trình" },
-    { id: 8, address: "268 Lý Thường Kiệt, HCM", date: "2024-10-23", waitTime: "9 phút", usageHistory: "syncfile.pdf", status: "Máy in sẵn sàng" },
-  ];
+  const [mockData, setMockData] = useState([]);
+
+  async function getPrinter(){
+    try{
+      dispatch(openBackDrop());
+      const response = await api.post(`student/printer?pageNo=0&pageSize=50`, formSearch);
+      const res = Array.from(response.data.content).map(item => ({
+        ...item,
+        dateOfUse: formatDate(item.dateOfUse),
+      }))
+      setMockData(res);
+    }catch(e){
+      console.error(e);
+    }
+    dispatch(closeBackDrop());
+  }
+
+  async function handlePrint(id){
+    if(Array.from(selectDocuments).length === 0){
+      alert('Vui lòng chọn tài liệu cần in!');
+      return;
+    }
+    // eslint-disable-next-line no-restricted-globals
+    if(confirm(`Bạn chắc chắn muốn in các tài liệu: ${Array.from(selectDocuments).map(item => item.filename).join(", ")} ?`)){
+      try{
+        dispatch(openBackDrop());
+        await api.post(`printer/print?idPrinter=${id}&idDocuments=${Array.from(selectDocuments).map(item => item.id)}`);
+        getPrinter();
+      }catch(e){
+        console.error(e);
+      }
+      dispatch(closeBackDrop());
+    }
+  }
+
+  function handleSearch(){
+    setFormSearch({
+      address: location || null,
+      status: status || null,
+      idPrinter: printerNumber || null,
+    });
+  }
+
+  useEffect(() => {
+    getPrinter()
+  }, [formSearch])
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -65,6 +120,12 @@ const PrintDocument = () => {
   ];
   return (
     <Container maxWidth="lg" className="print-document-container">
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Stack spacing={1}>
         <Breadcrumbs separator="›" aria-label="breadcrumb">
           {breadcrumbs}
@@ -109,8 +170,8 @@ const PrintDocument = () => {
         inputProps={{ "aria-label": "Tình Trạng" }}
       >
         <MenuItem value="">Chọn tình trạng</MenuItem>
-        <MenuItem value="available">Sẵn sàng</MenuItem>
-        <MenuItem value="in-use">Máy in đang in</MenuItem>
+        <MenuItem value="AVAILABILITY">Sẵn sàng</MenuItem>
+        <MenuItem value="BUSY">Máy in đang in</MenuItem>
       </Select>
     </FormControl>
   </div>
@@ -134,7 +195,7 @@ const PrintDocument = () => {
     variant="contained"
     color="primary"
     className="search-button"
-    onClick={() => console.log("Tìm kiếm")}
+    onClick={handleSearch}
   >
     Tìm kiếm
   </Button>
@@ -156,15 +217,15 @@ const PrintDocument = () => {
           <TableBody>
             {displayedData.map((item, index) => (
               <TableRow key={index}>
-                <TableCell>{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}</TableCell>
+                <TableCell>{item.id}</TableCell>
                 <TableCell>{item.address}</TableCell>
-                <TableCell>{item.date}</TableCell>
-                <TableCell>{item.waitTime}</TableCell>
-                <TableCell>{item.usageHistory}</TableCell>
+                <TableCell>{item.dateOfUse}</TableCell>
+                <TableCell>{item.timeout}</TableCell>
+                <TableCell>{Array.from(item.historyUse).join(', ') || "Bạn chưa sử dụng máy này"}</TableCell>
                 <TableCell>{item.status}</TableCell>
                 <TableCell>
-                  <Button variant="contained" className="upload-button">
-                    Upload Document
+                  <Button variant="contained" onClick={() => handlePrint(item.id)} className="upload-button">
+                    In tài liệu
                   </Button>
                 </TableCell>
               </TableRow>

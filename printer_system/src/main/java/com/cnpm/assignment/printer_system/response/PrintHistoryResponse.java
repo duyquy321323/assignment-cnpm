@@ -19,5 +19,6 @@ public class PrintHistoryResponse {
     private LocalDateTime datePrint;
     private String address;
     private String nameDocument;
-    private List<PageResponse> pageResponses;
+    private String typePage;
+    private Long quantityPage;
 }

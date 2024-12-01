@@ -35,6 +35,8 @@ public class QAndA {
     @JoinColumn(name = "id_spso")
     private SPSO spso;
 
+    private String title;
+
     @ManyToOne
     @JoinColumn(name = "id_student", nullable = false)
     private Student student;

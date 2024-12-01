@@ -24,4 +24,5 @@ public class LoginResponse {
     private String token;
     @Schema(description = "Hạn của Token trên", example = "1732558258000")
     private Long expiryTime;
+    private String role;
 }

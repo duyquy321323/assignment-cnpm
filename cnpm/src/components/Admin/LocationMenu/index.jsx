@@ -1,22 +1,24 @@
-import React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlaceIcon from "@mui/icons-material/Place";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import React, { useState } from "react";
 
-const LocationMenu = () => {
+const LocationMenu = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const [open, setOpen] = useState(false);
+  const { onChange } = props;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    setOpen(true);
   };
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
   return (
     <Box>
@@ -42,7 +44,10 @@ const LocationMenu = () => {
         }}
         sx={{ "&:hover .MuiButtonBase-root": { color: "black" } }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => {
+            onChange("address", "CS1");
+            handleClose();
+          }}>
           <ListItemIcon>
             <PlaceIcon fontSize="small" />
           </ListItemIcon>
@@ -50,8 +55,11 @@ const LocationMenu = () => {
             268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt
             Nam
           </ListItemText>
-        </MenuItem>
-        <MenuItem>
+        </MenuItem >
+        <MenuItem onClick={() => {
+            onChange("address", "CS2");
+            handleClose();
+          }}> 
           <ListItemIcon>
             <PlaceIcon fontSize="small" />
           </ListItemIcon>

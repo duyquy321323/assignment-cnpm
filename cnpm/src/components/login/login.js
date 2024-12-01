@@ -41,27 +41,33 @@
 
 
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { closeBackDrop, loginAction, openBackDrop } from "../../redux/action";
+import api from "../api";
 import illustrator from './../../assets/image/Illustration.png';
 import "./Login.css";
+import { Backdrop, CircularProgress } from "@mui/material";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const open = useSelector(state => state.backdropAction);
+  const dispatch = useDispatch();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    // Giả sử đây là nơi bạn thực hiện xác thực (ví dụ: gọi API đăng nhập)
-    if (email === "johndadev" && password === "123456") {
-      // Lưu token giả vào localStorage
-      localStorage.setItem("token", "fake-jwt-token");
-
-      // Chuyển hướng đến trang chính sau khi đăng nhập thành công
+    try{
+      dispatch(openBackDrop());
+      const response = await api.post(`account/login?email=${email}&password=${password}`);
+      dispatch(loginAction(response.data));
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("expiryTime", response.data.expiryTime);
       navigate("cnpm/src/components/homepage");
-    } else {
-      alert("Sai email hoặc mật khẩu. Vui lòng thử lại!");
+    }catch(e){
+      console.error(e);
     }
+    dispatch(closeBackDrop());
   };
 
   return (
@@ -76,7 +82,12 @@ const Login = () => {
           />
         </div>
       </div>
-
+<Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {/* Phần bên phải */}
       <div className="login-right">
         <div className="login-form">
@@ -87,7 +98,7 @@ const Login = () => {
               <label>Email</label>
               <input
                 type="text"
-                placeholder="johndadev"
+                placeholder="Nhập email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

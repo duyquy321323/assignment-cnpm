@@ -1,13 +1,16 @@
 // components/documents/Documents.js
-import SendIcon from '@mui/icons-material/Send';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
-import { Box, Button, Card, CardMedia, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import { Backdrop, Box, Button, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, Paper, TextField } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { closeBackDrop, openBackDrop } from '../../redux/action';
+import api from '../api';
 import './Support.css'; // Import CSS file
 
 const Support = () => {
@@ -15,13 +18,22 @@ const Support = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [title, setTitle] = useState(""); // Quản lý giá trị ô Chủ đề
     const [note, setNote] = useState(""); // Quản lý giá trị ô Ghi chú
+    const open = useSelector(state => state.backdropAction);
+    const dispatch = useDispatch();
     const handleHomePageClick = () => {
         navigate(`/home`);
     };
-    const handleSendClick = () => {
-        setOpenDialog(true);
-        setTitle("");
-        setNote("");
+    const handleSendClick = async () => {
+        try{
+            dispatch(openBackDrop());
+            await api.post(`student/question?idQAndA=&message=${note}&title=${title}`);
+            setOpenDialog(true);
+            setTitle("");
+            setNote("");
+        }catch(e){
+            console.error(e);
+        }
+        dispatch(closeBackDrop());
     };
     const handleClose = () => {
         setOpenDialog(false);
@@ -30,6 +42,12 @@ const Support = () => {
 
     return (
         <Container maxWidth="lg" className="documents-container">
+            <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
             <Stack spacing={1}>
                 <Breadcrumbs separator="›" className="breadcrumb">
                     {breadcrumbs}

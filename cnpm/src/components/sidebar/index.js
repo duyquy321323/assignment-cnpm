@@ -2,22 +2,34 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import FolderIcon from "@mui/icons-material/Folder";
 import HeadsetMicIcon from "@mui/icons-material/HeadsetMic";
 import HomeIcon from "@mui/icons-material/Home";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import image from '../../assets/image/image.png';
+import { logoutAction } from "../../redux/action";
+import api from "../api";
 import "./SideBar.css";
 const Sidebar = () => {
-  const handleLogout = () => {
-    // Xóa token khỏi localStorage để đăng xuất
-    localStorage.removeItem("token");
+  const dispatch = useDispatch();
+  const handleLogout = async () => {
+    try{
+      api.post('account/logout');
+      dispatch(logoutAction());
+    }catch(e){
+      console.error(e);
+    }
   };
+  const userData = useSelector(state => state.accountAction);
   return (
     <div className="sidebar">
       {/* Logo */}
       
 
       {/* Navigation */}
+      {userData && userData.role === "STUDENT"? 
       <ul>
         <li>
           <NavLink to="/homepage">
@@ -39,7 +51,24 @@ const Sidebar = () => {
             <HeadsetMicIcon /> Hỗ trợ
           </NavLink>
         </li>
+      </ul> : <ul>
+        <li>
+          <NavLink to="/home">
+            <HomeIcon /> Trang chủ
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/manage-printer">
+            <Inventory2Icon /> Quản lý máy in
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/manage-student">
+            <ManageAccountsIcon /> Quản lý sinh viên
+          </NavLink>
+        </li>
       </ul>
+}
       {/* Notification box */}
       <div className="notification-box">
         <h3>Thông báo</h3>
@@ -55,7 +84,7 @@ const Sidebar = () => {
 
       {/* Logout Button */}
       <button className="logout-button" onClick={handleLogout}>
-        <NavLink to="/login" className="logout-link">
+        <NavLink className="logout-link">
           <LogoutIcon /> Đăng xuất
         </NavLink>
       </button>

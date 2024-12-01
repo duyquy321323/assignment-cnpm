@@ -87,7 +87,9 @@ public class AccountServiceImpl implements AccountService {
         user.setLastAccessedDate(LocalDateTime.now());
         userRepository.save(user);
 
-        return LoginResponse.builder().avatar(user.getUrlAvatar()).fullName(user.getFullName()).id(user.getId())
+        String role = (user instanceof SPSO? "SPSO" : "STUDENT");
+
+        return LoginResponse.builder().role(role).avatar(user.getUrlAvatar()).fullName(user.getFullName()).id(user.getId())
                 .token(token).expiryTime(jwtToken.extractExpirationToken(token).getTime()).build();
     }
 

@@ -12,6 +12,10 @@ import AnswerStudent_SPSO from './components/AnswerStudent_SPSO/AnswerStudent_SP
 import PaymentHistory from './components/payment/PaymentHistory';
 import PurchasePages from './components/payment/PurchasePages';
 import Support from './components/support/Support';
+import Admin from './components/Admin';
+import PrinterManagement from './components/Admin/PrinterManagement';
+import UserManagement from './components/Admin/UserManagement';
+import UserProfile from './components/Admin/UserProfile';
 
 // Hàm kiểm tra trạng thái đăng nhập
 const isAuthenticated = () => {
@@ -56,13 +60,17 @@ function App() {
                   <Route path='/homepage' element={<Homepage/>}/>
                   <Route path="/files" element={<Documents />} />
                   <Route path="/print" element={<PrintDocument />} />
-                  <Route path="/edit/:id" element={<EditDocument />} />
+                  {/* <Route path="/edit/:id" element={<EditDocument />} /> */}
                   <Route path="/answer-student" element={<AnswerStudent_SPSO />} />
                   {/* Đường dẫn mặc định khi đăng nhập thành công */}
                   <Route path="*" element={<Navigate to="/homepage" replace />} />
                   <Route path="/payment" element={<PaymentHistory />} />
                   <Route path="/payment/purchase" element={<PurchasePages />} />
                   <Route path="/support" element={<Support />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/manage-printer" element={<PrinterManagement />} />
+                  <Route path="/manage-student" element={<UserManagement />} />
+                  <Route path="/profile/:studentId" element={<UserProfile />} />
                 </Routes>
               </MainLayout>
             </ProtectedRoute>
