@@ -97,7 +97,6 @@ const PrintDocument = () => {
   useEffect(() => {
     getPrinter()
   }, [formSearch])
-
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
