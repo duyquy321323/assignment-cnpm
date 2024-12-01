@@ -8,6 +8,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useState } from 'react';
 import './NavBar.css';
+import { NavLink } from 'react-router-dom';
 
 const NavBar = () => {
   const handleMailClick = () => {
@@ -84,9 +85,9 @@ const NavBar = () => {
           open={Boolean(anchorEl)} // Kiểm tra xem menu có mở hay không
           onClose={handleClose} // Đóng menu khi click bên ngoài hoặc chọn một mục
         >
-          <MenuItem onClick={handleClose}>Thông tin cá nhân</MenuItem>
-          <MenuItem onClick={handleClose}>Lịch sử thanh toán</MenuItem>
-          <MenuItem onClick={handleClose}>Lịch sử in ấn</MenuItem>
+          <MenuItem onClick={handleClose}><NavLink to="/UserInfor">Thông tin cá nhân</NavLink></MenuItem>
+          <MenuItem onClick={handleClose}><NavLink to="/ViewPayment">Lịch sử thanh toán</NavLink></MenuItem>
+          <MenuItem onClick={handleClose}><NavLink to="/PrintingHistory">Lịch sử in ấn</NavLink></MenuItem>
         </Menu>
       </div>
     </div>

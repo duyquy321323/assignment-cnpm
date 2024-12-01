@@ -1,6 +1,6 @@
 import axios from 'axios';
 const api = axios.create({
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'https://print-system-production.up.railway.app/',
     withCredentials: true,
 })
 

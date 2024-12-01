@@ -1,31 +1,23 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-<<<<<<< HEAD
 // import DashBoard from "./components/dashboard/index"; THAY BANG HOMEPAGE NHEEE
-=======
-import DashBoard from "./components/dashboard/index";
->>>>>>> conghau
-import PrintDocument from './components/documentsfile-forstudent/chooseprint/PrintDocument';
-import EditDocument from "./components/documentsfile-forstudent/editdocument";
-import Documents from "./components/documentsfile-forstudent/index";
-import Login from "./components/login/login";
-import NavBar from "./components/navbar/index";
-import SideBar from "./components/sidebar/index";
-<<<<<<< HEAD
-import Homepage from './components/homepage/homepage';
-import AnswerStudent_SPSO from './components/AnswerStudent_SPSO/AnswerStudent_SPSO';
-import PaymentHistory from './components/payment/PaymentHistory';
-import PurchasePages from './components/payment/PurchasePages';
-import Support from './components/support/Support';
 import Admin from './components/Admin';
 import PrinterManagement from './components/Admin/PrinterManagement';
 import UserManagement from './components/Admin/UserManagement';
 import UserProfile from './components/Admin/UserProfile';
-=======
-import UserProfile from './components/userprofile/UserProfile';
-import ViewPaymentHistory from './components/viewpayment/ViewPaymentHistory';
+import AnswerStudent_SPSO from './components/AnswerStudent_SPSO/AnswerStudent_SPSO';
+import PrintDocument from './components/documentsfile-forstudent/chooseprint/PrintDocument';
+import Documents from "./components/documentsfile-forstudent/index";
+import Homepage from './components/homepage/homepage';
+import Login from "./components/login/login";
+import NavBar from "./components/navbar/index";
+import PaymentHistory from './components/payment/PaymentHistory';
+import PurchasePages from './components/payment/PurchasePages';
 import PrintingHistory from './components/PrintingHistory/PrintingHistory';
->>>>>>> conghau
+import SideBar from "./components/sidebar/index";
+import Support from './components/support/Support';
+import ViewPaymentHistory from './components/viewpayment/ViewPaymentHistory';
+import UserProfiler from './components/userprofile/UserProfile';
 
 // Hàm kiểm tra trạng thái đăng nhập
 const isAuthenticated = () => {
@@ -81,7 +73,7 @@ function App() {
                   <Route path="/manage-printer" element={<PrinterManagement />} />
                   <Route path="/manage-student" element={<UserManagement />} />
                   <Route path="/profile/:studentId" element={<UserProfile />} />
-                  <Route path="/UserInfor" element={<UserProfile />} />
+                  <Route path="/UserInfor" element={<UserProfiler />} />
                   <Route path="/ViewPayment" element={<ViewPaymentHistory />} />
                   <Route path="/PrintingHistory" element={<PrintingHistory />} />
                 </Routes>

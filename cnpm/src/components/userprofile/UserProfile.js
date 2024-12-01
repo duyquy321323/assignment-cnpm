@@ -1,6 +1,6 @@
-import { Avatar, Button } from "@mui/material";
+import { Avatar } from "@mui/material";
+import { useEffect, useState } from "react";
 import "./UserProfile.css";
-import { useState, useEffect } from "react";
 
 const UserProfile = () => {
 
@@ -39,7 +39,7 @@ const UserProfile = () => {
                                 <div className="infor-left">
                                     <ul className="infor-pro">
                                         <span>Mã số sinh viên</span>
-                                        <div className="pro-box">{user.mmsv}</div>
+                                        <div className="pro-box">{user.mssv}</div>
                                     </ul>
 
                                     <ul className="infor-pro">
