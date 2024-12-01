@@ -34,7 +34,7 @@ p{
     margin: 0 0;
     padding: 5px 0 8px 0;
     left: 0;
-    border-radius: 10px 10px 0 0;
+    /* border-radius: 8px 8px 0 0; */
 
 }
 
@@ -42,6 +42,7 @@ p{
     color: #fff;
     padding-top: 6px;
     padding-left: 30px;
+    margin: 0 0 0 17.5vw;
 }
 
 .announcement-detail-container{
@@ -50,7 +51,7 @@ p{
     width: 100vw;
     margin: 0 0;
     box-sizing: border-box;
-    padding: 20px 60px 40px 50px;
+    padding: 20px 60px 40px 19vw;
     gap: 25px
 }
 
