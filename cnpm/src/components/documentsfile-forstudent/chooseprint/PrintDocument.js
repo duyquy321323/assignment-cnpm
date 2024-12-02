@@ -6,10 +6,15 @@ import {
   CircularProgress,
   Container,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   Link,
   MenuItem,
+  Modal,
   Pagination,
   Paper,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   Table,
@@ -52,6 +57,26 @@ const PrintDocument = () => {
 
   // Example mock data
   const [mockData, setMockData] = useState([]);
+  //Bổ sung nè
+  const [openPopup, setOpenPopup] = useState(false); // Popup state
+  const [paperSize, setPaperSize] = useState(""); // Paper size
+  const [printType, setPrintType] = useState(""); // Print type
+  const [selectedPrinterId, setSelectedPrinterId] = useState(null); 
+  // đóng mở
+  const handleOpenPopup = () => setOpenPopup(true);
+  const handleClosePopup = () => setOpenPopup(false);
+
+  //xử lý khi in 
+  const handlePrintPopup = () => {
+    if (!paperSize || !printType) {
+      alert("Vui lòng chọn kích thước giấy và kiểu in.");
+      return;
+    }
+    alert(`In tài liệu với cài đặt:
+    - Kích thước giấy: ${paperSize}
+    - Kiểu in: ${printType}`);
+    handleClosePopup();
+  };
 
   async function getPrinter(){
     try{
@@ -223,9 +248,16 @@ const PrintDocument = () => {
                 <TableCell>{Array.from(item.historyUse).join(', ') || "Bạn chưa sử dụng máy này"}</TableCell>
                 <TableCell>{item.status}</TableCell>
                 <TableCell>
-                  <Button variant="contained" onClick={() => handlePrint(item.id)} className="upload-button">
+                  {/* <Button variant="contained" onClick={() => handlePrint(item.id)} className="upload-button">
                     In tài liệu
-                  </Button>
+                  </Button> */}
+                   <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleOpenPopup}
+                >
+                  In tài liệu
+                </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -242,6 +274,53 @@ const PrintDocument = () => {
         />
       </Box>
       </Paper>
+      <Modal open={openPopup} onClose={handleClosePopup}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h6" component="h2" gutterBottom>
+            Cài đặt in tài liệu
+          </Typography>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormLabel>Kích thước giấy</FormLabel>
+            <RadioGroup
+              value={paperSize}
+              onChange={(e) => setPaperSize(e.target.value)}
+            >
+              <FormControlLabel value="A4" control={<Radio />} label="A4" />
+              <FormControlLabel value="A5" control={<Radio />} label="A5" />
+            </RadioGroup>
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormLabel>Kiểu in</FormLabel>
+            <RadioGroup
+              value={printType}
+              onChange={(e) => setPrintType(e.target.value)}
+            >
+              <FormControlLabel value="Thường" control={<Radio />} label="Thường" />
+              <FormControlLabel value="Màu" control={<Radio />} label="Màu" />
+            </RadioGroup>
+          </FormControl>
+          <Stack direction="row" justifyContent="space-between" spacing={2}>
+            <Button variant="contained" onClick={handlePrintPopup}>
+              In
+            </Button>
+            <Button variant="outlined" onClick={handleClosePopup}>
+              Hủy
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
     </Container>
   );
 };

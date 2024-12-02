@@ -7,8 +7,9 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useState } from 'react';
-import './NavBar.css';
 import { NavLink } from 'react-router-dom';
+import avatar from './../../assets/image/avatar-trang-4.jpg';
+import './NavBar.css';
 
 const NavBar = () => {
   const handleMailClick = () => {
@@ -75,7 +76,7 @@ const NavBar = () => {
           className="navbar-avatar" 
           sx={{ width: 40, height: 40 }} 
           alt="User Avatar" 
-          src="" 
+          src={avatar}
           onClick={handleAvatarClick}
         />
         
