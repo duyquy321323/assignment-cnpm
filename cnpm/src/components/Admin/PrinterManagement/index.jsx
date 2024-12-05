@@ -95,9 +95,7 @@ const PrinterManagement = () => {
           marginLeft: "375px",
           marginTop: "100px",
           marginRight: "40px",
-          ".css-1gtchvp-MuiPaper-root": {
             borderRadius: "10px",
-          },
         }}
       >
         <Breadcrumbs separator="›" className="breadcrumb">
@@ -120,7 +118,7 @@ const PrinterManagement = () => {
               sx={{
                 color: "black",
                 borderColor: "black",
-                "&.MuiButtonBase-root": { textTransform: "none" },
+               textTransform: "none",
                 width: "150px",
                 height: "50px",
                 borderRadius: "10px",
@@ -129,7 +127,7 @@ const PrinterManagement = () => {
               Date
             </Button>
           </Box>
-          <Divider variant="middle" sx={{ "&.MuiDivider-root": { borderWidth: "1px" } }} />
+          <Divider variant="middle" sx={{borderWidth: "1px"  }} />
           <Box
             sx={{
               display: "flex",
@@ -137,7 +135,7 @@ const PrinterManagement = () => {
               alignItems: "center",
               px: 14,
               py: 2,
-              ".MuiButtonBase-root": { textTransform: "none" },
+        ".MuiButtonBase-root": { textTransform: "none" },
             }}
           >
             <LocationMenu onChange={handleChange} />
@@ -145,7 +143,7 @@ const PrinterManagement = () => {
               orientation="vertical"
               variant="middle"
               flexItem
-              sx={{ "&.MuiDivider-root": { borderWidth: "1px" } }}
+              sx={{ borderWidth: "1px"  }}
             />
             <StateMenu onChange={handleChange} />
             <Divider
@@ -153,7 +151,7 @@ const PrinterManagement = () => {
               variant="middle"
               flexItem
               onChange={handleChange}
-              sx={{ "&.MuiDivider-root": { borderWidth: "1px" } }}
+              sx={{ borderWidth: "1px"  }}
             />
             <Box>
               <Typography variant="h6">Số thứ tự máy in</Typography>
@@ -163,7 +161,7 @@ const PrinterManagement = () => {
               orientation="vertical"
               variant="middle"
               flexItem
-              sx={{ "&.MuiDivider-root": { borderWidth: "1px" } }}
+              sx={{ borderWidth: "1px"  }}
             />
             <Button
               variant="contained"
@@ -178,16 +176,14 @@ const PrinterManagement = () => {
               Search
             </Button>
           </Box>
-          <Box
-            sx={{
-              ".css-70zvr5-MuiTableContainer-root": {
-                marginX: "2rem",
-                borderRadius: "10px",
-                width: "auto",
-              },
-            }}
-          >
-            <TableContainer>
+            <TableContainer
+                component={Box}
+                sx={{
+                  marginX: "2rem",
+                  borderRadius: "10px",
+                  width: "auto",
+                }}
+            >
               <Table>
                 <TableHead className="table-header">
                   <TableRow>
@@ -249,7 +245,7 @@ const PrinterManagement = () => {
                 justifyContent="center"
                 m={2}
                 sx={{
-                  ".css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected": { backgroundColor: "#09bcff" },
+                  color: "#09bcff",
                 }}
               >
                 <Pagination
@@ -260,7 +256,6 @@ const PrinterManagement = () => {
                         />
               </Box>
             </TableContainer>
-          </Box>
         </Paper>
       </Box>
       <ModifyPrinter open={open} handleClose={handleClose} printer={selectedPrinter} handleSave={handleSave} />

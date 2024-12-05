@@ -7,10 +7,14 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useState } from 'react';
-import './NavBar.css';
+import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import './NavBar.css';
 
 const NavBar = () => {
+
+  const userData = useSelector(state => state.accountAction);
+
   const handleMailClick = () => {
     alert("Hiển thị danh sách tin nhắn từ SSPO hoặc thông báo khiếu nại.");
   };
@@ -73,9 +77,8 @@ const NavBar = () => {
         />
          <Avatar 
           className="navbar-avatar" 
-          sx={{ width: 40, height: 40 }} 
+          sx={{ width: 40, height: 40, paddingLeft: '10px' }} 
           alt="User Avatar" 
-          src="" 
           onClick={handleAvatarClick}
         />
         
@@ -86,8 +89,12 @@ const NavBar = () => {
           onClose={handleClose} // Đóng menu khi click bên ngoài hoặc chọn một mục
         >
           <MenuItem onClick={handleClose}><NavLink to="/UserInfor">Thông tin cá nhân</NavLink></MenuItem>
+          {userData && userData.role && userData.role === 'STUDENT'?
+          <>
           <MenuItem onClick={handleClose}><NavLink to="/ViewPayment">Lịch sử thanh toán</NavLink></MenuItem>
           <MenuItem onClick={handleClose}><NavLink to="/PrintingHistory">Lịch sử in ấn</NavLink></MenuItem>
+          </> : <></>
+        }
         </Menu>
       </div>
     </div>
